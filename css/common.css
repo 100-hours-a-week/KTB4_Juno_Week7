@@ -90,3 +90,29 @@ p {
   line-height: 100%;
   color: #000000;
 }
+
+/* 헤더 프로필 버튼 css */
+.header-profile-button {
+  position: absolute;
+  left: calc(50% + 260px);
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 36px;
+  height: 36px;
+  padding: 0;
+
+  border-radius: 50%;
+  background-color: #d9d9d9;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-profile-image {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #d9d9d9;
+}
