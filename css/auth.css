@@ -1,0 +1,102 @@
+/* 로그인 페이지 css */
+
+.login-page {
+  min-height: calc(100vh - 104px);
+  background-color: #f4f5f7;
+  display: flex;
+  justify-content: center;
+}
+
+.login-section {
+  width: 392px;
+  margin-top: 264px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-title {
+  width: 83px;
+  height: 38px;
+  margin-bottom: 38px;
+  font-family: Pretendard, Arial, sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 100%;
+  text-align: center;
+  color: #000000;
+}
+
+.login-form {
+  width: 392px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-input-area {
+  width: 392px;
+  height: 198px;
+  padding: 24px 16px 0;
+  background-color: transparent;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.form-label {
+  margin-bottom: 8px;
+  font-family: Pretendard, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.form-input {
+  width: 100%;
+  height: 33px;
+  padding: 0 10px;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  background-color: transparent;
+  font-family: Pretendard, Arial, sans-serif;
+  font-size: 14px;
+  color: #000000;
+}
+
+.form-input::placeholder {
+  color: #000000;
+}
+
+.helper-text {
+  margin-top: -10px;
+  font-family: Pretendard, Arial, sans-serif;
+  font-size: 12px;
+  color: #ff0000;
+}
+
+.login-button {
+  width: 361px;
+  height: 37px;
+  border-radius: 8px;
+  background-color: #aca0eb;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.signup-link {
+  width: 68px;
+  height: 30px;
+  margin-top: 8px;
+  border-radius: 0 8px 8px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Pretendard, Arial, sans-serif;
+  font-size: 14px;
+  color: #000000;
+}
