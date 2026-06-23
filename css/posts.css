@@ -55,13 +55,13 @@
 .post-card {
   width: 592px;
   height: 169px;
-  margin-top: 117px;
+  margin-top: 87px;
 
   border-radius: 16px;
   background-color: #ffffff;
   overflow: hidden;
 
-  box-shadow: 3px 4px 10px rgba(0, 0, 0, 0.06);
+  box-shadow: 3px 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .post-card-top {
