@@ -33,7 +33,7 @@
       <section class="post-create-section">
         <h2 class="post-create-title">게시글 수정</h2>
 
-        <form class="post-create-form">
+        <form class="post-create-form post-edit-form" novalidate>
           <div class="post-create-field">
             <label for="editPostTitle" class="post-create-label">제목*</label>
 
@@ -41,6 +41,7 @@
               id="editPostTitle"
               class="post-title-input"
               type="text"
+              maxlength="26"
               value="제목 1"
               placeholder="제목을 입력해주세요. (최대 26글자)"
             />
@@ -57,18 +58,25 @@
 무엇을 얘기할까요? 아무말이라면, 삶은 항상 놀라운 모험이라고 생각합니다. 우리는 매일 새로운 경험을 하고 배우며 성장합니다.</textarea
             >
 
-            <p class="post-create-helper-text">* helper text</p>
+            <p id="postEditHelperText" class="post-create-helper-text"></p>
           </div>
 
           <div class="post-image-field">
             <label class="post-image-label">이미지</label>
 
             <div class="post-file-row">
-              <label for="editPostImage" class="post-file-button"
-                >파일 선택</label
-              >
-              <input id="editPostImage" class="post-file-input" type="file" />
-              <span class="post-file-name">기존 파일명</span>
+              <label for="editPostImage" class="post-file-button">
+                파일 선택
+              </label>
+              <input
+                id="editPostImage"
+                class="post-file-input"
+                type="file"
+                accept="image/*"
+              />
+              <span id="editPostFileName" class="post-file-name">
+                기존 파일명
+              </span>
             </div>
           </div>
 
@@ -76,5 +84,7 @@
         </form>
       </section>
     </main>
+
+    <script src="./js/posts.js"></script>
   </body>
 </html>
