@@ -1,8 +1,21 @@
+const getAuthHeaders = () => {
+  const userId = localStorage.getItem("userId");
+
+  if (!userId) {
+    return {};
+  }
+
+  return {
+    user_id: userId,
+  };
+};
+
 const request = async (url, options = {}) => {
   const response = await fetch(`${API_BASE_URL}${url}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeaders(),
       ...options.headers,
     },
   });

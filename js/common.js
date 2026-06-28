@@ -19,9 +19,22 @@ if (headerProfileButton && headerProfileMenu) {
   });
 }
 
+const signoutApi = async () => {
+  return await request("/users/signout", {
+    method: "POST",
+  });
+};
+
 if (logoutButton) {
-  logoutButton.addEventListener("click", () => {
-    localStorage.removeItem("loginUser");
-    window.location.href = "./index.html";
+  logoutButton.addEventListener("click", async () => {
+    try {
+      await signoutApi();
+    } catch (error) {
+      console.error(error.message);
+    } finally {
+      localStorage.removeItem("userId");
+      localStorage.removeItem("loginUser");
+      window.location.href = "./index.html";
+    }
   });
 }
