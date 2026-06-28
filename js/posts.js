@@ -259,6 +259,11 @@ if (commentCreateForm) {
   const commentSubmitButton = document.querySelector(".comment-create-button");
   const commentList = document.querySelector(".comment-list");
 
+  const likeStatCard = document.querySelector(".like-stat-card");
+  const likeCountElement = document.querySelector(".like-count");
+  const viewCountElement = document.querySelector(".view-count");
+  const commentCountElement = document.querySelector(".comment-count");
+
   const commentDeleteModal = document.querySelector("#commentDeleteModal");
   const commentDeleteCancelButton = document.querySelector(
     ".delete-modal-cancel-button",
@@ -269,6 +274,10 @@ if (commentCreateForm) {
 
   let editingCommentItem = null;
   let deletingCommentItem = null;
+  let isLiked = false;
+  let likeCount = 123;
+  let viewCount = 123;
+  let commentCount = 123;
 
   const getNowDateText = () => {
     const now = new Date();
@@ -281,6 +290,20 @@ if (commentCreateForm) {
     const seconds = String(now.getSeconds()).padStart(2, "0");
 
     return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+  };
+
+  const formatCount = (count) => {
+    if (count >= 1000) {
+      return `${Math.floor(count / 1000)}k`;
+    }
+
+    return String(count);
+  };
+
+  const updateStats = () => {
+    likeCountElement.textContent = formatCount(likeCount);
+    viewCountElement.textContent = formatCount(viewCount);
+    commentCountElement.textContent = formatCount(commentCount);
   };
 
   const updateCommentButtonState = () => {
@@ -325,6 +348,20 @@ if (commentCreateForm) {
     return commentItem;
   };
 
+  likeStatCard.addEventListener("click", () => {
+    if (isLiked) {
+      isLiked = false;
+      likeCount -= 1;
+      likeStatCard.style.backgroundColor = "#d9d9d9";
+    } else {
+      isLiked = true;
+      likeCount += 1;
+      likeStatCard.style.backgroundColor = "#aca0eb";
+    }
+
+    updateStats();
+  });
+
   commentTextarea.addEventListener("input", updateCommentButtonState);
 
   commentCreateForm.addEventListener("submit", (event) => {
@@ -348,6 +385,9 @@ if (commentCreateForm) {
     } else {
       const newComment = createCommentElement(commentText);
       commentList.appendChild(newComment);
+
+      commentCount += 1;
+      updateStats();
     }
 
     commentTextarea.value = "";
@@ -397,12 +437,16 @@ if (commentCreateForm) {
     }
 
     deletingCommentItem.remove();
+    commentCount -= 1;
+    updateStats();
+
     deletingCommentItem = null;
     commentDeleteModal.classList.remove("show");
     document.body.style.overflow = "";
   });
 
   updateCommentButtonState();
+  updateStats();
 }
 /* 게시글 삭제 모달 이벤트 */
 
