@@ -40,6 +40,12 @@ if (profileEditForm) {
     });
   };
 
+  const deleteMyAccountApi = async () => {
+    return await request("/users/me", {
+      method: "DELETE",
+    });
+  };
+
   const showHelperText = (message) => {
     profileHelperText.textContent = message;
     profileHelperText.style.visibility = "visible";
@@ -172,14 +178,31 @@ if (profileEditForm) {
     document.body.style.overflow = "";
   });
 
-  withdrawConfirmButton.addEventListener("click", () => {
-    localStorage.removeItem("loginUser");
-    localStorage.removeItem("profile");
+  withdrawConfirmButton.addEventListener("click", async () => {
+    const userId = localStorage.getItem("userId");
 
-    withdrawModal.classList.remove("show");
-    document.body.style.overflow = "";
+    if (!userId) {
+      alert("로그인이 필요합니다.");
+      window.location.href = "./index.html";
+      return;
+    }
 
-    window.location.href = "./index.html";
+    try {
+      await deleteMyAccountApi();
+
+      alert("회원 탈퇴가 완료되었습니다.");
+
+      localStorage.removeItem("userId");
+      localStorage.removeItem("loginUser");
+      localStorage.removeItem("profile");
+
+      withdrawModal.classList.remove("show");
+      document.body.style.overflow = "";
+
+      window.location.href = "./index.html";
+    } catch (error) {
+      alert(error.message);
+    }
   });
 
   hideHelperText();
