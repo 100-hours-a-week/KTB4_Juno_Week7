@@ -399,18 +399,54 @@ if (postEditForm) {
     editPostSubmitButton.style.backgroundColor = "#aca0eb";
   };
 
-  const updatePost = () => {
-    const editedPost = {
+  const params = new URLSearchParams(window.location.search);
+  const postId = params.get("post_id");
+
+  const getPostDetailApi = async () => {
+    return await request(`/posts/${postId}`);
+  };
+
+  const updatePostApi = async () => {
+    const body = {
       title: editPostTitleInput.value.trim(),
       content: editPostContentTextarea.value.trim(),
-      image: selectedEditImageDataUrl,
-      imageName: selectedEditImage
-        ? selectedEditImage.name
-        : editPostFileName.textContent,
-      updatedAt: new Date().toISOString(),
+      image: "",
     };
 
-    localStorage.setItem("editedPost", JSON.stringify(editedPost));
+    return await request(`/posts/${postId}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    });
+  };
+
+  const renderEditPost = (post) => {
+    editPostTitleInput.value = post.title;
+    editPostContentTextarea.value = post.content;
+
+    if (post.image) {
+      editPostFileName.textContent = "기존 이미지";
+    } else {
+      editPostFileName.textContent = "파일을 선택해주세요.";
+    }
+
+    updateEditSubmitButtonState();
+  };
+
+  const loadEditPost = async () => {
+    if (!postId) {
+      alert("게시글 정보를 찾을 수 없습니다.");
+      window.location.href = "./posts.html";
+      return;
+    }
+
+    try {
+      const response = await getPostDetailApi();
+
+      renderEditPost(response.data);
+    } catch (error) {
+      alert(error.message);
+      window.location.href = "./posts.html";
+    }
   };
 
   editPostTitleInput.addEventListener("input", () => {
@@ -445,7 +481,7 @@ if (postEditForm) {
     reader.readAsDataURL(file);
   });
 
-  postEditForm.addEventListener("submit", (event) => {
+  postEditForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const isValid = validatePostEditForm();
@@ -455,12 +491,25 @@ if (postEditForm) {
       return;
     }
 
-    updatePost();
+    if (!postId) {
+      alert("게시글 정보를 찾을 수 없습니다.");
+      return;
+    }
 
-    window.location.href = "./post-detail.html";
+    try {
+      await updatePostApi();
+
+      alert("게시글이 수정되었습니다.");
+
+      window.location.href = `./post-detail.html?post_id=${postId}`;
+    } catch (error) {
+      setEditHelperText(`*${error.message}`);
+      editPostSubmitButton.style.backgroundColor = "#aca0eb";
+    }
   });
 
   updateEditSubmitButtonState();
+  loadEditPost();
 }
 
 /* 게시글 상세 페이지 댓글 이벤트 */
