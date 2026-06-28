@@ -33,7 +33,7 @@
       <section class="post-create-section">
         <h2 class="post-create-title">게시글 작성</h2>
 
-        <form class="post-create-form">
+        <form class="post-create-form" novalidate>
           <div class="post-create-field">
             <label for="postTitle" class="post-create-label">제목*</label>
 
@@ -41,6 +41,7 @@
               id="postTitle"
               class="post-title-input"
               type="text"
+              maxlength="26"
               placeholder="제목을 입력해주세요. (최대 26글자)"
             />
           </div>
@@ -54,7 +55,7 @@
               placeholder="내용을 입력해주세요."
             ></textarea>
 
-            <p class="post-create-helper-text">* helper text</p>
+            <p id="postCreateHelperText" class="post-create-helper-text"></p>
           </div>
 
           <div class="post-image-field">
@@ -62,8 +63,15 @@
 
             <div class="post-file-row">
               <label for="postImage" class="post-file-button">파일 선택</label>
-              <input id="postImage" class="post-file-input" type="file" />
-              <span class="post-file-name">파일을 선택해주세요.</span>
+              <input
+                id="postImage"
+                class="post-file-input"
+                type="file"
+                accept="image/*"
+              />
+              <span id="postFileName" class="post-file-name">
+                파일을 선택해주세요.
+              </span>
             </div>
           </div>
 
@@ -71,5 +79,7 @@
         </form>
       </section>
     </main>
+
+    <script src="./js/posts.js"></script>
   </body>
 </html>

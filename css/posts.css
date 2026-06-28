@@ -597,7 +597,8 @@
 }
 
 .post-create-helper-text {
-  width: 71px;
+  width: auto;
+  min-width: 300px;
   height: 15px;
   margin-top: 8px;
   margin-left: 15px;
@@ -608,6 +609,8 @@
   line-height: 100%;
   letter-spacing: 0;
   color: #ff0000;
+
+  white-space: nowrap;
 }
 
 .post-image-field {
@@ -660,7 +663,8 @@
 }
 
 .post-file-name {
-  width: 116px;
+  width: auto;
+  max-width: 420px;
   height: 17px;
   margin-left: 12px;
 
@@ -669,6 +673,10 @@
   line-height: 100%;
   letter-spacing: 0;
   color: #000000;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .post-submit-button {
