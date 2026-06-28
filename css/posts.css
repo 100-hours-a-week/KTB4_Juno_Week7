@@ -55,7 +55,6 @@
 .post-card {
   width: 592px;
   height: 169px;
-  margin-top: 87px;
 
   border-radius: 16px;
   background-color: #ffffff;
@@ -822,6 +821,11 @@
 }
 .post-list {
   width: 100%;
+  margin-top: 87px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .post-empty-message {
