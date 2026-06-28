@@ -167,11 +167,6 @@ if (signupForm) {
       return false;
     }
 
-    if (isDuplicatedEmail(email)) {
-      showHelperText(signupEmailHelper, "*중복된 이메일 입니다.");
-      return false;
-    }
-
     hideHelperText(signupEmailHelper);
     return true;
   };
@@ -233,11 +228,6 @@ if (signupForm) {
       return false;
     }
 
-    if (isDuplicatedNickname(nickname)) {
-      showHelperText(signupNicknameHelper, "*중복된 닉네임 입니다.");
-      return false;
-    }
-
     hideHelperText(signupNicknameHelper);
     return true;
   };
@@ -250,14 +240,12 @@ if (signupForm) {
 
     return (
       signupEmailRegex.test(email) &&
-      !isDuplicatedEmail(email) &&
       passwordRegex.test(password) &&
       passwordConfirm &&
       password === passwordConfirm &&
       nickname &&
       !hasSpace(nickname) &&
-      nickname.length <= 10 &&
-      !isDuplicatedNickname(nickname)
+      nickname.length <= 10
     );
   };
 
@@ -283,18 +271,18 @@ if (signupForm) {
     plusIcon.style.display = "block";
   };
 
-  const saveUser = () => {
-    const users = getSavedUsers();
-
-    const newUser = {
+  const signupApi = async () => {
+    const body = {
       email: signupEmailInput.value.trim(),
+      password: signupPasswordInput.value.trim(),
       nickname: signupNicknameInput.value.trim(),
-      profileImage: selectedProfileImageDataUrl,
+      profile_image: selectedProfileImageDataUrl || "",
     };
 
-    users.push(newUser);
-
-    localStorage.setItem("users", JSON.stringify(users));
+    return await request("/users/signup", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
   };
 
   profileImageButton.addEventListener("click", () => {
@@ -363,8 +351,9 @@ if (signupForm) {
     updateSignupButtonState();
   });
 
-  signupForm.addEventListener("submit", (event) => {
+  signupForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+
     validateProfileImage();
 
     const isEmailValid = validateSignupEmail();
@@ -382,8 +371,24 @@ if (signupForm) {
       return;
     }
 
-    saveUser();
+    try {
+      await signupApi();
 
-    window.location.href = "./index.html";
+      window.location.href = "./index.html";
+    } catch (error) {
+      const message = error.message;
+
+      if (message.includes("이메일")) {
+        showHelperText(signupEmailHelper, `*${message}`);
+        return;
+      }
+
+      if (message.includes("닉네임")) {
+        showHelperText(signupNicknameHelper, `*${message}`);
+        return;
+      }
+
+      alert(message);
+    }
   });
 }
