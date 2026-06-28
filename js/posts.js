@@ -144,24 +144,17 @@ if (postCreateForm) {
     postSubmitButton.style.backgroundColor = "#aca0eb";
   };
 
-  const savePost = () => {
-    const posts = getSavedPosts();
-
-    const newPost = {
-      id: Date.now(),
+  const createPostApi = async () => {
+    const body = {
       title: postTitleInput.value.trim(),
       content: postContentTextarea.value.trim(),
-      image: selectedPostImageDataUrl,
-      imageName: selectedPostImage ? selectedPostImage.name : "",
-      createdAt: new Date().toISOString(),
-      likes: 0,
-      comments: 0,
-      views: 0,
+      image: "",
     };
 
-    posts.unshift(newPost);
-
-    localStorage.setItem("posts", JSON.stringify(posts));
+    return await request("/posts", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
   };
 
   postTitleInput.addEventListener("input", () => {
@@ -196,7 +189,7 @@ if (postCreateForm) {
     reader.readAsDataURL(file);
   });
 
-  postCreateForm.addEventListener("submit", (event) => {
+  postCreateForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const isValid = validatePostForm();
@@ -206,9 +199,14 @@ if (postCreateForm) {
       return;
     }
 
-    savePost();
+    try {
+      await createPostApi();
 
-    window.location.href = "./posts.html";
+      window.location.href = "./posts.html";
+    } catch (error) {
+      setHelperText(`*${error.message}`);
+      postSubmitButton.style.backgroundColor = "#aca0eb";
+    }
   });
 
   updatePostSubmitButtonState();
