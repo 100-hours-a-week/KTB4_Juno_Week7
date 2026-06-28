@@ -249,3 +249,119 @@ if (postEditForm) {
 
   updateEditSubmitButtonState();
 }
+
+/* 게시글 상세 페이지 댓글 이벤트 */
+
+const commentCreateForm = document.querySelector(".comment-create-form");
+
+if (commentCreateForm) {
+  const commentTextarea = document.querySelector(".comment-create-textarea");
+  const commentSubmitButton = document.querySelector(".comment-create-button");
+  const commentList = document.querySelector(".comment-list");
+
+  let editingCommentItem = null;
+
+  const getNowDateText = () => {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const date = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+  };
+
+  const updateCommentButtonState = () => {
+    const commentText = commentTextarea.value.trim();
+
+    if (commentText) {
+      commentSubmitButton.style.backgroundColor = "#7f6aee";
+      return;
+    }
+
+    commentSubmitButton.style.backgroundColor = "#aca0eb";
+  };
+
+  const createCommentElement = (content) => {
+    const commentItem = document.createElement("article");
+    commentItem.className = "comment-item";
+
+    commentItem.innerHTML = `
+      <div class="comment-main">
+        <div class="comment-profile-image"></div>
+
+        <div class="comment-content-box">
+          <div class="comment-meta-row">
+            <span class="comment-author-name">더미 작성자 1</span>
+            <time class="comment-date">${getNowDateText()}</time>
+          </div>
+
+          <p class="comment-content">${content}</p>
+        </div>
+      </div>
+
+      <div class="comment-actions">
+        <button type="button" class="post-detail-action-button comment-edit-button">
+          <span class="post-detail-action-text">수정</span>
+        </button>
+        <button type="button" class="post-detail-action-button comment-delete-button">
+          <span class="post-detail-action-text">삭제</span>
+        </button>
+      </div>
+    `;
+
+    return commentItem;
+  };
+
+  commentTextarea.addEventListener("input", updateCommentButtonState);
+
+  commentCreateForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const commentText = commentTextarea.value.trim();
+
+    if (!commentText) {
+      commentSubmitButton.style.backgroundColor = "#aca0eb";
+      return;
+    }
+
+    if (editingCommentItem) {
+      const commentContent =
+        editingCommentItem.querySelector(".comment-content");
+
+      commentContent.textContent = commentText;
+
+      editingCommentItem = null;
+      commentSubmitButton.textContent = "댓글 등록";
+    } else {
+      const newComment = createCommentElement(commentText);
+      commentList.appendChild(newComment);
+    }
+
+    commentTextarea.value = "";
+    updateCommentButtonState();
+  });
+
+  commentList.addEventListener("click", (event) => {
+    const editButton = event.target.closest(".comment-edit-button");
+
+    if (!editButton) {
+      return;
+    }
+
+    const commentItem = editButton.closest(".comment-item");
+    const commentContent = commentItem.querySelector(".comment-content");
+
+    editingCommentItem = commentItem;
+    commentTextarea.value = commentContent.textContent;
+    commentSubmitButton.textContent = "댓글 수정";
+    commentSubmitButton.style.backgroundColor = "#7f6aee";
+
+    commentTextarea.focus();
+  });
+
+  updateCommentButtonState();
+}

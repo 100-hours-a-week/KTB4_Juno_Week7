@@ -420,12 +420,12 @@
 
 .comment-item {
   width: 544px;
-  height: 65px;
+  min-height: 78px;
+  margin-bottom: 20px;
 
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 154px;
 }
 
 .comment-main {
@@ -467,7 +467,7 @@
 }
 
 .comment-date {
-  width: 133px;
+  width: 160px;
   height: 18px;
   margin-left: 24px;
   padding-top: 2px;
@@ -476,8 +476,10 @@
   font-weight: 400;
   line-height: 130%;
   letter-spacing: 0;
-  text-align: right;
+  text-align: left;
   color: #000000;
+
+  white-space: nowrap;
 }
 
 .comment-content {
