@@ -23,15 +23,43 @@ if (profileEditForm) {
   );
 
   let originalNickname = "";
+  let selectedProfileImageFile = null;
+  let uploadedProfileImageUrl = "";
 
   const getMyProfileApi = async () => {
     return await request("/users/me");
   };
 
+  const uploadImageApi = async (file) => {
+    const formData = new FormData();
+
+    formData.append("image", file);
+
+    const response = await fetch(`${API_BASE_URL}/images`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(data?.message || "이미지 업로드 중 오류가 발생했습니다.");
+    }
+
+    return data;
+  };
+
   const updateMyProfileApi = async () => {
+    let profileImageUrl = uploadedProfileImageUrl;
+
+    if (selectedProfileImageFile) {
+      const imageResponse = await uploadImageApi(selectedProfileImageFile);
+      profileImageUrl = imageResponse.data.image_url;
+    }
+
     const body = {
       nickname: nicknameInput.value.trim(),
-      profile_image: "",
+      profile_image: profileImageUrl,
     };
 
     return await request("/users/me", {
@@ -96,9 +124,10 @@ if (profileEditForm) {
     profileEmail.textContent = user.email;
     nicknameInput.value = user.nickname;
     originalNickname = user.nickname;
+    uploadedProfileImageUrl = user.profile_image || "";
 
-    if (user.profile_image) {
-      profileImageEditButton.style.backgroundImage = `url(${user.profile_image})`;
+    if (uploadedProfileImageUrl) {
+      profileImageEditButton.style.backgroundImage = `url(${API_BASE_URL}${uploadedProfileImageUrl})`;
       profileImageEditButton.classList.add("has-image");
     }
 
@@ -128,8 +157,11 @@ if (profileEditForm) {
     const file = profileImageInput.files[0];
 
     if (!file) {
+      selectedProfileImageFile = null;
       return;
     }
+
+    selectedProfileImageFile = file;
 
     const reader = new FileReader();
 
@@ -160,6 +192,7 @@ if (profileEditForm) {
       await updateMyProfileApi();
 
       originalNickname = nicknameInput.value.trim();
+      selectedProfileImageFile = null;
       profileSubmitButton.style.backgroundColor = "#7f6aee";
       showProfileToast();
     } catch (error) {
