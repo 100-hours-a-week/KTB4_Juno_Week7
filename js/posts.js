@@ -1,3 +1,85 @@
+/* 게시글 목록 페이지 API 연동 */
+
+const postList = document.querySelector("#postList");
+
+if (postList) {
+  const getPostsApi = async () => {
+    return await request("/posts");
+  };
+
+  const formatPostListCount = (count) => {
+    if (count >= 1000) {
+      return `${Math.floor(count / 1000)}k`;
+    }
+
+    return String(count);
+  };
+
+  const getProfileImageStyle = (imageUrl) => {
+    if (!imageUrl) {
+      return "";
+    }
+
+    return `style="background-image: url('${imageUrl}'); background-size: cover; background-position: center;"`;
+  };
+
+  const renderPosts = (posts) => {
+    postList.innerHTML = "";
+
+    if (!posts.length) {
+      postList.innerHTML = `<p class="post-empty-message">게시글이 없습니다.</p>`;
+      return;
+    }
+
+    posts.forEach((post) => {
+      const postCardLink = document.createElement("a");
+
+      postCardLink.href = `./post-detail.html?post_id=${post.post_id}`;
+      postCardLink.className = "post-card-link";
+
+      postCardLink.innerHTML = `
+        <article class="post-card">
+          <div class="post-card-top">
+            <h2 class="post-title">${post.title}</h2>
+
+            <div class="post-info-row">
+              <div class="post-stats">
+                <span>좋아요 ${formatPostListCount(post.like_count)}</span>
+                <span>댓글 ${formatPostListCount(post.comment_count)}</span>
+                <span>조회수 ${formatPostListCount(post.view_count)}</span>
+              </div>
+
+              <time class="post-date">${post.created_at}</time>
+            </div>
+          </div>
+
+          <div class="post-card-bottom">
+            <div 
+              class="post-author-image"
+              ${getProfileImageStyle(post.author_profile_image)}
+            ></div>
+            <span class="post-author-name">${post.author_nickname}</span>
+          </div>
+        </article>
+      `;
+
+      postList.appendChild(postCardLink);
+    });
+  };
+
+  const loadPosts = async () => {
+    try {
+      const response = await getPostsApi();
+
+      renderPosts(response.data.posts);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  loadPosts();
+}
+
 /* 게시글 작성 페이지 이벤트 */
 
 const postCreateForm = document.querySelector(
