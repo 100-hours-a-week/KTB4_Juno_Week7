@@ -36,7 +36,7 @@
       <section class="profile-edit-section">
         <h2 class="profile-edit-title">회원정보수정</h2>
 
-        <form class="profile-edit-form">
+        <form class="profile-edit-form" novalidate>
           <div class="profile-image-field">
             <label class="profile-image-label">프로필 사진*</label>
 
@@ -65,17 +65,35 @@
               type="text"
               value="스타트업코드"
             />
-            <p class="profile-helper-text">* helper text</p>
+            <p id="profileHelperText" class="profile-helper-text"></p>
           </div>
 
           <button type="submit" class="profile-submit-button">수정하기</button>
         </form>
 
         <button type="button" class="withdraw-button">회원 탈퇴</button>
-        <!-- TODO: 추후 토스트 -->
-        <!-- <div class="profile-toast">수정완료</div> -->
+
+        <div class="profile-toast" id="profileToast">수정완료</div>
       </section>
     </main>
+    <div class="modal-backdrop" id="withdrawModal">
+      <div class="withdraw-modal">
+        <h3 class="withdraw-modal-title">회원탈퇴 하시겠습니까?</h3>
+        <p class="withdraw-modal-description">
+          탈퇴한 계정은 복구할 수 없습니다.
+        </p>
+
+        <div class="withdraw-modal-actions">
+          <button type="button" class="withdraw-modal-cancel-button">
+            취소
+          </button>
+          <button type="button" class="withdraw-modal-confirm-button">
+            확인
+          </button>
+        </div>
+      </div>
+    </div>
     <script src="./js/common.js"></script>
+    <script src="./js/users.js"></script>
   </body>
 </html>
