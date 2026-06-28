@@ -206,6 +206,17 @@ if (passwordEditForm) {
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=[\]{};':"\\|,.<>/?]).{8,20}$/;
 
+  const updatePasswordApi = async () => {
+    const body = {
+      new_password: passwordInput.value.trim(),
+    };
+
+    return await request("/users/me/password", {
+      method: "PUT",
+      body: JSON.stringify(body),
+    });
+  };
+
   const showPasswordHelperText = (message) => {
     passwordHelperText.textContent = message;
     passwordHelperText.style.visibility = "visible";
@@ -305,15 +316,6 @@ if (passwordEditForm) {
     }, 2000);
   };
 
-  const savePassword = () => {
-    const passwordInfo = {
-      password: passwordInput.value.trim(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    localStorage.setItem("passwordInfo", JSON.stringify(passwordInfo));
-  };
-
   passwordInput.addEventListener("input", () => {
     validatePasswordInput();
 
@@ -334,7 +336,7 @@ if (passwordEditForm) {
     updatePasswordSubmitButtonState();
   });
 
-  passwordEditForm.addEventListener("submit", (event) => {
+  passwordEditForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const isValid = validatePasswordForm();
@@ -344,9 +346,28 @@ if (passwordEditForm) {
       return;
     }
 
-    savePassword();
-    passwordSubmitButton.style.backgroundColor = "#7f6aee";
-    showPasswordToast();
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+      alert("로그인이 필요합니다.");
+      window.location.href = "./index.html";
+      return;
+    }
+
+    try {
+      await updatePasswordApi();
+
+      passwordInput.value = "";
+      passwordConfirmInput.value = "";
+      passwordSubmitButton.style.backgroundColor = "#aca0eb";
+
+      hidePasswordHelperText();
+      hidePasswordConfirmHelperText();
+      showPasswordToast();
+    } catch (error) {
+      showPasswordHelperText(`*${error.message}`);
+      passwordSubmitButton.style.backgroundColor = "#aca0eb";
+    }
   });
 
   hidePasswordHelperText();
