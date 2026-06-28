@@ -79,6 +79,7 @@ if (postList) {
 
   loadPosts();
 }
+let currentPostLiked = false;
 
 /* 게시글 상세 페이지 API 연동 */
 
@@ -92,11 +93,13 @@ if (postDetailTitle) {
   const postDetailDate = document.querySelector("#postDetailDate");
   const postDetailImage = document.querySelector("#postDetailImage");
   const postDetailContent = document.querySelector("#postDetailContent");
+
   const postDetailLikeCount = document.querySelector("#postDetailLikeCount");
   const postDetailViewCount = document.querySelector("#postDetailViewCount");
   const postDetailCommentCount = document.querySelector(
     "#postDetailCommentCount",
   );
+  const detailLikeStatCard = document.querySelector(".like-stat-card");
   const postEditLink = document.querySelector("#postEditLink");
   const commentList = document.querySelector("#commentList");
 
@@ -178,6 +181,14 @@ if (postDetailTitle) {
     postDetailLikeCount.textContent = formatDetailCount(post.like_count);
     postDetailViewCount.textContent = formatDetailCount(post.view_count);
     postDetailCommentCount.textContent = formatDetailCount(post.comment_count);
+
+    currentPostLiked = post.liked;
+
+    if (currentPostLiked) {
+      detailLikeStatCard.style.backgroundColor = "#aca0eb";
+    } else {
+      detailLikeStatCard.style.backgroundColor = "#d9d9d9";
+    }
 
     postEditLink.href = `./post-edit.html?post_id=${post.post_id}`;
 
@@ -552,7 +563,6 @@ if (commentCreateForm) {
 
   let editingCommentItem = null;
   let deletingCommentItem = null;
-  let isLiked = false;
 
   const params = new URLSearchParams(window.location.search);
   const postId = params.get("post_id");
@@ -579,9 +589,9 @@ if (commentCreateForm) {
 
   const updateLikeState = (likeCount, liked) => {
     likeCountElement.textContent = formatCount(likeCount);
-    isLiked = liked;
+    currentPostLiked = liked;
 
-    if (isLiked) {
+    if (currentPostLiked) {
       likeStatCard.style.backgroundColor = "#aca0eb";
       return;
     }
@@ -607,7 +617,9 @@ if (commentCreateForm) {
     }
 
     try {
-      const response = isLiked ? await deleteLikeApi() : await addLikeApi();
+      const response = currentPostLiked
+        ? await deleteLikeApi()
+        : await addLikeApi();
 
       updateLikeState(response.data.like_count, response.data.liked);
     } catch (error) {
