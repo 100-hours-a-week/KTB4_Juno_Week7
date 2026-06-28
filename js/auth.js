@@ -339,12 +339,12 @@ if (signupForm) {
     reader.readAsDataURL(file);
   });
 
-  signupEmailInput.addEventListener("blur", () => {
+  signupEmailInput.addEventListener("input", () => {
     validateSignupEmail();
     updateSignupButtonState();
   });
 
-  signupPasswordInput.addEventListener("blur", () => {
+  signupPasswordInput.addEventListener("input", () => {
     validateSignupPassword();
 
     if (signupPasswordConfirmInput.value.trim()) {
@@ -354,12 +354,12 @@ if (signupForm) {
     updateSignupButtonState();
   });
 
-  signupPasswordConfirmInput.addEventListener("blur", () => {
+  signupPasswordConfirmInput.addEventListener("input", () => {
     validateSignupPasswordConfirm();
     updateSignupButtonState();
   });
 
-  signupNicknameInput.addEventListener("blur", () => {
+  signupNicknameInput.addEventListener("input", () => {
     validateSignupNickname();
     updateSignupButtonState();
   });
