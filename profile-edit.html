@@ -19,13 +19,24 @@
       >
         <span class="header-profile-image"></span>
       </button>
+      <nav class="header-profile-menu" aria-label="회원 메뉴">
+        <a href="./profile-edit.html" class="header-profile-menu-item">
+          회원정보수정
+        </a>
+        <a href="./password-edit.html" class="header-profile-menu-item">
+          비밀번호수정
+        </a>
+        <button type="button" class="header-profile-menu-item logout-button">
+          로그아웃
+        </button>
+      </nav>
     </header>
 
     <main class="profile-edit-page">
       <section class="profile-edit-section">
         <h2 class="profile-edit-title">회원정보수정</h2>
 
-        <form class="profile-edit-form">
+        <form class="profile-edit-form" novalidate>
           <div class="profile-image-field">
             <label class="profile-image-label">프로필 사진*</label>
 
@@ -43,27 +54,43 @@
 
           <div class="profile-info-field">
             <label class="profile-info-label">이메일</label>
-            <p class="profile-email">startupcode@gmail.com</p>
+            <p class="profile-email" id="profileEmail">startupcode@gmail.com</p>
           </div>
 
           <div class="profile-info-field nickname-field">
             <label for="nickname" class="profile-info-label">닉네임</label>
-            <input
-              id="nickname"
-              class="profile-nickname-input"
-              type="text"
-              value="스타트업코드"
-            />
-            <p class="profile-helper-text">* helper text</p>
+            <input id="nickname" class="profile-nickname-input" type="text" />
+            <p id="profileHelperText" class="profile-helper-text"></p>
           </div>
 
           <button type="submit" class="profile-submit-button">수정하기</button>
         </form>
 
         <button type="button" class="withdraw-button">회원 탈퇴</button>
-        <!-- TODO: 추후 토스트 -->
-        <!-- <div class="profile-toast">수정완료</div> -->
+
+        <div class="profile-toast" id="profileToast">수정완료</div>
       </section>
     </main>
+    <div class="modal-backdrop" id="withdrawModal">
+      <div class="withdraw-modal">
+        <h3 class="withdraw-modal-title">회원탈퇴 하시겠습니까?</h3>
+        <p class="withdraw-modal-description">
+          탈퇴한 계정은 복구할 수 없습니다.
+        </p>
+
+        <div class="withdraw-modal-actions">
+          <button type="button" class="withdraw-modal-cancel-button">
+            취소
+          </button>
+          <button type="button" class="withdraw-modal-confirm-button">
+            확인
+          </button>
+        </div>
+      </div>
+    </div>
+    <script src="./js/config.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/common.js"></script>
+    <script src="./js/user.js"></script>
   </body>
 </html>

@@ -55,7 +55,6 @@
 .post-card {
   width: 592px;
   height: 169px;
-  margin-top: 87px;
 
   border-radius: 16px;
   background-color: #ffffff;
@@ -92,9 +91,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
 }
 
 .post-stats {
+  min-width: 0;
+
   display: flex;
   align-items: center;
   gap: 10px;
@@ -111,8 +113,9 @@
 }
 
 .post-date {
-  width: 133px;
-  height: 18px;
+  width: auto;
+  min-width: 160px;
+  height: auto;
 
   font-size: 14px;
   font-weight: 400;
@@ -120,6 +123,9 @@
   letter-spacing: 0;
   text-align: right;
   color: #000000;
+
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .post-card-bottom {
@@ -168,22 +174,29 @@
 }
 
 .post-detail-title {
-  width: 59px;
-  height: 31px;
+  width: 100%;
+  min-height: 31px;
+  margin: 0;
 
-  font-size: 24px;
+  font-size: clamp(18px, 4vw, 24px);
   font-weight: 700;
   line-height: 130%;
   letter-spacing: 0;
   color: #000000;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .post-detail-meta-row {
+  width: 100%;
   margin-top: 12px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
 }
 
 .post-detail-author {
@@ -202,7 +215,7 @@
 }
 
 .post-detail-author-name {
-  width: 79px;
+  max-width: 120px;
   height: 20px;
   margin-left: 10px;
 
@@ -211,10 +224,14 @@
   line-height: 130%;
   letter-spacing: 0;
   color: #000000;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .post-detail-date {
-  width: 133px;
+  width: auto;
   height: 18px;
   margin-left: 24px;
 
@@ -222,11 +239,15 @@
   font-weight: 400;
   line-height: 130%;
   letter-spacing: 0;
-  text-align: right;
+  text-align: left;
   color: #000000;
+
+  white-space: nowrap;
 }
 
 .post-detail-actions {
+  flex-shrink: 0;
+
   display: flex;
   align-items: center;
   gap: 8px;
@@ -272,7 +293,20 @@
   height: 306px;
   margin: 24px auto 0;
 
-  background-color: #d9d9d9;
+  background-color: transparent;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+}
+.post-detail-image-element {
+  max-width: 100%;
+  max-height: 100%;
+
+  object-fit: contain;
+  display: block;
 }
 
 .post-detail-content {
@@ -420,12 +454,12 @@
 
 .comment-item {
   width: 544px;
-  height: 65px;
+  min-height: 78px;
+  margin-bottom: 20px;
 
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 154px;
 }
 
 .comment-main {
@@ -452,11 +486,13 @@
 
   display: flex;
   align-items: flex-start;
+  gap: 24px;
   padding-top: 8px;
 }
 
 .comment-author-name {
-  width: 79px;
+  width: auto;
+  max-width: 120px;
   height: 20px;
 
   font-size: 15px;
@@ -464,20 +500,27 @@
   line-height: 130%;
   letter-spacing: 0;
   color: #000000;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
 }
 
 .comment-date {
-  width: 133px;
+  width: auto;
   height: 18px;
-  margin-left: 24px;
   padding-top: 2px;
 
   font-size: 14px;
   font-weight: 400;
   line-height: 130%;
   letter-spacing: 0;
-  text-align: right;
+  text-align: left;
   color: #000000;
+
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .comment-content {
@@ -597,7 +640,8 @@
 }
 
 .post-create-helper-text {
-  width: 71px;
+  width: auto;
+  min-width: 300px;
   height: 15px;
   margin-top: 8px;
   margin-left: 15px;
@@ -608,6 +652,8 @@
   line-height: 100%;
   letter-spacing: 0;
   color: #ff0000;
+
+  white-space: nowrap;
 }
 
 .post-image-field {
@@ -660,7 +706,8 @@
 }
 
 .post-file-name {
-  width: 116px;
+  width: auto;
+  max-width: 420px;
   height: 17px;
   margin-left: 12px;
 
@@ -669,6 +716,10 @@
   line-height: 100%;
   letter-spacing: 0;
   color: #000000;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .post-submit-button {
@@ -689,4 +740,114 @@
   letter-spacing: 0;
   text-align: center;
   color: #ffffff;
+}
+/* 삭제 확인 모달 */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+
+  width: 100%;
+  height: 100vh;
+
+  background-color: rgba(0, 0, 0, 0.5);
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-backdrop.show {
+  display: flex;
+}
+
+.delete-modal {
+  width: 408px;
+  height: 242px;
+
+  border-radius: 12px;
+  background-color: #ffffff;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.delete-modal-title {
+  width: 247px;
+  height: 29px;
+  margin-top: 49px;
+
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  color: #000000;
+
+  white-space: nowrap;
+}
+
+.delete-modal-description {
+  width: 273px;
+  height: 24px;
+  margin-top: 24px;
+
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  color: #000000;
+}
+
+.delete-modal-actions {
+  margin-top: 31px;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.delete-modal-cancel-button,
+.delete-modal-confirm-button {
+  width: 127px;
+  height: 44px;
+
+  border-radius: 12px;
+
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  color: #ffffff;
+}
+
+.delete-modal-cancel-button {
+  background-color: #242424;
+}
+
+.delete-modal-confirm-button {
+  background-color: #c4a5fa;
+}
+.post-list {
+  width: 100%;
+  margin-top: 87px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.post-empty-message {
+  width: 100%;
+  margin-top: 120px;
+  font-family: Inter, Pretendard, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 100%;
+  text-align: center;
+  color: #000000;
 }

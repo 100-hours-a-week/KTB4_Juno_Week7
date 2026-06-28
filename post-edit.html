@@ -27,13 +27,24 @@
       >
         <span class="header-profile-image"></span>
       </button>
+      <nav class="header-profile-menu" aria-label="회원 메뉴">
+        <a href="./profile-edit.html" class="header-profile-menu-item">
+          회원정보수정
+        </a>
+        <a href="./password-edit.html" class="header-profile-menu-item">
+          비밀번호수정
+        </a>
+        <button type="button" class="header-profile-menu-item logout-button">
+          로그아웃
+        </button>
+      </nav>
     </header>
 
     <main class="post-create-page">
       <section class="post-create-section">
         <h2 class="post-create-title">게시글 수정</h2>
 
-        <form class="post-create-form">
+        <form class="post-create-form post-edit-form" novalidate>
           <div class="post-create-field">
             <label for="editPostTitle" class="post-create-label">제목*</label>
 
@@ -41,7 +52,7 @@
               id="editPostTitle"
               class="post-title-input"
               type="text"
-              value="제목 1"
+              maxlength="26"
               placeholder="제목을 입력해주세요. (최대 26글자)"
             />
           </div>
@@ -53,22 +64,27 @@
               id="editPostContent"
               class="post-content-textarea"
               placeholder="내용을 입력해주세요."
-            >
-무엇을 얘기할까요? 아무말이라면, 삶은 항상 놀라운 모험이라고 생각합니다. 우리는 매일 새로운 경험을 하고 배우며 성장합니다.</textarea
-            >
+            ></textarea>
 
-            <p class="post-create-helper-text">* helper text</p>
+            <p id="postEditHelperText" class="post-create-helper-text"></p>
           </div>
 
           <div class="post-image-field">
             <label class="post-image-label">이미지</label>
 
             <div class="post-file-row">
-              <label for="editPostImage" class="post-file-button"
-                >파일 선택</label
-              >
-              <input id="editPostImage" class="post-file-input" type="file" />
-              <span class="post-file-name">기존 파일명</span>
+              <label for="editPostImage" class="post-file-button">
+                파일 선택
+              </label>
+              <input
+                id="editPostImage"
+                class="post-file-input"
+                type="file"
+                accept="image/*"
+              />
+              <span id="editPostFileName" class="post-file-name">
+                기존 파일명
+              </span>
             </div>
           </div>
 
@@ -76,5 +92,9 @@
         </form>
       </section>
     </main>
+    <script src="./js/config.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/common.js"></script>
+    <script src="./js/posts.js"></script>
   </body>
 </html>

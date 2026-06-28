@@ -19,6 +19,17 @@
       >
         <span class="header-profile-image"></span>
       </button>
+      <nav class="header-profile-menu" aria-label="회원 메뉴">
+        <a href="./profile-edit.html" class="header-profile-menu-item">
+          회원정보수정
+        </a>
+        <a href="./password-edit.html" class="header-profile-menu-item">
+          비밀번호수정
+        </a>
+        <button type="button" class="header-profile-menu-item logout-button">
+          로그아웃
+        </button>
+      </nav>
     </header>
 
     <main class="posts-page">
@@ -32,29 +43,12 @@
           게시글 작성
         </a>
 
-        <a href="./post-detail.html" class="post-card-link">
-          <article class="post-card">
-            <div class="post-card-top">
-              <h2 class="post-title">제목 1</h2>
-
-              <div class="post-info-row">
-                <div class="post-stats">
-                  <span>좋아요 0</span>
-                  <span>댓글 0</span>
-                  <span>조회수 0</span>
-                </div>
-
-                <time class="post-date">2021-01-01 00:00:00</time>
-              </div>
-            </div>
-
-            <div class="post-card-bottom">
-              <div class="post-author-image"></div>
-              <span class="post-author-name">더미 작성자 1</span>
-            </div>
-          </article>
-        </a>
+        <div class="post-list" id="postList"></div>
       </section>
     </main>
+    <script src="./js/config.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/common.js"></script>
+    <script src="./js/posts.js"></script>
   </body>
 </html>
