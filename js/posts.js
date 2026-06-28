@@ -259,7 +259,16 @@ if (commentCreateForm) {
   const commentSubmitButton = document.querySelector(".comment-create-button");
   const commentList = document.querySelector(".comment-list");
 
+  const commentDeleteModal = document.querySelector("#commentDeleteModal");
+  const commentDeleteCancelButton = document.querySelector(
+    ".delete-modal-cancel-button",
+  );
+  const commentDeleteConfirmButton = document.querySelector(
+    ".delete-modal-confirm-button",
+  );
+
   let editingCommentItem = null;
+  let deletingCommentItem = null;
 
   const getNowDateText = () => {
     const now = new Date();
@@ -347,20 +356,50 @@ if (commentCreateForm) {
 
   commentList.addEventListener("click", (event) => {
     const editButton = event.target.closest(".comment-edit-button");
+    const deleteButton = event.target.closest(".comment-delete-button");
 
-    if (!editButton) {
+    if (editButton) {
+      const commentItem = editButton.closest(".comment-item");
+      const commentContent = commentItem.querySelector(".comment-content");
+
+      editingCommentItem = commentItem;
+      commentTextarea.value = commentContent.textContent;
+      commentSubmitButton.textContent = "댓글 수정";
+      commentSubmitButton.style.backgroundColor = "#7f6aee";
+
+      commentTextarea.focus();
       return;
     }
 
-    const commentItem = editButton.closest(".comment-item");
-    const commentContent = commentItem.querySelector(".comment-content");
+    if (deleteButton) {
+      deletingCommentItem = deleteButton.closest(".comment-item");
+      commentDeleteModal.classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+  });
 
-    editingCommentItem = commentItem;
-    commentTextarea.value = commentContent.textContent;
-    commentSubmitButton.textContent = "댓글 수정";
-    commentSubmitButton.style.backgroundColor = "#7f6aee";
+  commentDeleteCancelButton.addEventListener("click", () => {
+    deletingCommentItem = null;
+    commentDeleteModal.classList.remove("show");
+    document.body.style.overflow = "";
+  });
 
-    commentTextarea.focus();
+  commentDeleteConfirmButton.addEventListener("click", () => {
+    if (!deletingCommentItem) {
+      return;
+    }
+
+    if (editingCommentItem === deletingCommentItem) {
+      editingCommentItem = null;
+      commentTextarea.value = "";
+      commentSubmitButton.textContent = "댓글 등록";
+      updateCommentButtonState();
+    }
+
+    deletingCommentItem.remove();
+    deletingCommentItem = null;
+    commentDeleteModal.classList.remove("show");
+    document.body.style.overflow = "";
   });
 
   updateCommentButtonState();

@@ -122,10 +122,16 @@
             </div>
 
             <div class="comment-actions">
-              <button type="button" class="post-detail-action-button">
+              <button
+                type="button"
+                class="post-detail-action-button comment-edit-button"
+              >
                 <span class="post-detail-action-text">수정</span>
               </button>
-              <button type="button" class="post-detail-action-button">
+              <button
+                type="button"
+                class="post-detail-action-button comment-delete-button"
+              >
                 <span class="post-detail-action-text">삭제</span>
               </button>
             </div>
@@ -133,6 +139,21 @@
         </div>
       </section>
     </main>
+    <div class="modal-backdrop" id="commentDeleteModal">
+      <div class="delete-modal">
+        <h3 class="delete-modal-title">댓글을 삭제하시겠습니까?</h3>
+        <p class="delete-modal-description">
+          삭제한 내용은 복구 할 수 없습니다.
+        </p>
+
+        <div class="delete-modal-actions">
+          <button type="button" class="delete-modal-cancel-button">취소</button>
+          <button type="button" class="delete-modal-confirm-button">
+            확인
+          </button>
+        </div>
+      </div>
+    </div>
     <script src="./js/posts.js"></script>
   </body>
 </html>
