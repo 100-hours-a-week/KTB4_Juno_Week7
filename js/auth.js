@@ -270,12 +270,38 @@ if (signupForm) {
     plusIcon.style.display = "block";
   };
 
+  const uploadImageApi = async (file) => {
+    const formData = new FormData();
+
+    formData.append("image", file);
+
+    const response = await fetch(`${API_BASE_URL}/images`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(data?.message || "이미지 업로드 중 오류가 발생했습니다.");
+    }
+
+    return data;
+  };
+
   const signupApi = async () => {
+    let profileImageUrl = "";
+
+    if (selectedProfileImage) {
+      const imageResponse = await uploadImageApi(selectedProfileImage);
+      profileImageUrl = imageResponse.data.image_url;
+    }
+
     const body = {
       email: signupEmailInput.value.trim(),
       password: signupPasswordInput.value.trim(),
       nickname: signupNicknameInput.value.trim(),
-      profile_image: "",
+      profile_image: profileImageUrl,
     };
 
     return await request("/users/signup", {

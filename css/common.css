@@ -103,18 +103,27 @@ p {
   padding: 0;
 
   border-radius: 50%;
-  background-color: #d9d9d9;
+  background-color: transparent;
 
   display: flex;
   align-items: center;
   justify-content: center;
+
+  overflow: hidden;
 }
 
 .header-profile-image {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
+
   border-radius: 50%;
   background-color: #d9d9d9;
+
+  display: block;
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 /* 헤더 프로필 드롭다운 */
 .header-profile-menu {
