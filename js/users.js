@@ -165,3 +165,169 @@ if (profileEditForm) {
   hideHelperText();
   updateProfileSubmitButtonState();
 }
+/* 비밀번호 수정 페이지 이벤트 */
+
+const passwordEditForm = document.querySelector(".password-edit-form");
+
+if (passwordEditForm) {
+  const passwordInput = document.querySelector("#password");
+  const passwordConfirmInput = document.querySelector("#passwordConfirm");
+  const passwordHelperText = document.querySelector("#passwordHelperText");
+  const passwordConfirmHelperText = document.querySelector(
+    "#passwordConfirmHelperText",
+  );
+  const passwordSubmitButton = document.querySelector(
+    ".password-submit-button",
+  );
+  const passwordToast = document.querySelector("#passwordToast");
+
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=[\]{};':"\\|,.<>/?]).{8,20}$/;
+
+  const showPasswordHelperText = (message) => {
+    passwordHelperText.textContent = message;
+    passwordHelperText.style.visibility = "visible";
+  };
+
+  const hidePasswordHelperText = () => {
+    passwordHelperText.textContent = "* helper text";
+    passwordHelperText.style.visibility = "hidden";
+  };
+
+  const showPasswordConfirmHelperText = (message) => {
+    passwordConfirmHelperText.textContent = message;
+    passwordConfirmHelperText.style.visibility = "visible";
+  };
+
+  const hidePasswordConfirmHelperText = () => {
+    passwordConfirmHelperText.textContent = "* helper text";
+    passwordConfirmHelperText.style.visibility = "hidden";
+  };
+
+  const isPasswordFormValid = () => {
+    const password = passwordInput.value.trim();
+    const passwordConfirm = passwordConfirmInput.value.trim();
+
+    return (
+      password &&
+      passwordRegex.test(password) &&
+      passwordConfirm &&
+      password === passwordConfirm
+    );
+  };
+
+  const updatePasswordSubmitButtonState = () => {
+    if (isPasswordFormValid()) {
+      passwordSubmitButton.style.backgroundColor = "#7f6aee";
+      return;
+    }
+
+    passwordSubmitButton.style.backgroundColor = "#aca0eb";
+  };
+
+  const validatePasswordInput = () => {
+    const password = passwordInput.value.trim();
+    const passwordConfirm = passwordConfirmInput.value.trim();
+
+    if (!password) {
+      showPasswordHelperText("*비밀번호를 입력해주세요");
+      return false;
+    }
+
+    if (!passwordRegex.test(password)) {
+      showPasswordHelperText(
+        "*비밀번호는 8자 이상, 20자 이하이며, 대문자, 소문자, 숫자, 특수문자를 각각 최소 1개 포함해야 합니다.",
+      );
+      return false;
+    }
+
+    if (passwordConfirm && password !== passwordConfirm) {
+      showPasswordHelperText("*비밀번호 확인과 다릅니다.");
+      return false;
+    }
+
+    hidePasswordHelperText();
+    return true;
+  };
+
+  const validatePasswordConfirmInput = () => {
+    const password = passwordInput.value.trim();
+    const passwordConfirm = passwordConfirmInput.value.trim();
+
+    if (!passwordConfirm) {
+      showPasswordConfirmHelperText("*비밀번호를 한번 더 입력해주세요");
+      return false;
+    }
+
+    if (password && password !== passwordConfirm) {
+      showPasswordConfirmHelperText("*비밀번호와 다릅니다.");
+      return false;
+    }
+
+    hidePasswordConfirmHelperText();
+    return true;
+  };
+
+  const validatePasswordForm = () => {
+    const isPasswordValid = validatePasswordInput();
+    const isPasswordConfirmValid = validatePasswordConfirmInput();
+
+    return isPasswordValid && isPasswordConfirmValid;
+  };
+
+  const showPasswordToast = () => {
+    passwordToast.classList.add("show");
+
+    setTimeout(() => {
+      passwordToast.classList.remove("show");
+    }, 2000);
+  };
+
+  const savePassword = () => {
+    const passwordInfo = {
+      password: passwordInput.value.trim(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    localStorage.setItem("passwordInfo", JSON.stringify(passwordInfo));
+  };
+
+  passwordInput.addEventListener("input", () => {
+    validatePasswordInput();
+
+    if (passwordConfirmInput.value.trim()) {
+      validatePasswordConfirmInput();
+    }
+
+    updatePasswordSubmitButtonState();
+  });
+
+  passwordConfirmInput.addEventListener("input", () => {
+    validatePasswordConfirmInput();
+
+    if (passwordInput.value.trim()) {
+      validatePasswordInput();
+    }
+
+    updatePasswordSubmitButtonState();
+  });
+
+  passwordEditForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const isValid = validatePasswordForm();
+
+    if (!isValid) {
+      passwordSubmitButton.style.backgroundColor = "#aca0eb";
+      return;
+    }
+
+    savePassword();
+    passwordSubmitButton.style.backgroundColor = "#7f6aee";
+    showPasswordToast();
+  });
+
+  hidePasswordHelperText();
+  hidePasswordConfirmHelperText();
+  updatePasswordSubmitButtonState();
+}
