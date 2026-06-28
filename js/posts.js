@@ -466,6 +466,17 @@ if (postEditForm) {
 /* 게시글 상세 페이지 댓글 이벤트 */
 
 const commentCreateForm = document.querySelector(".comment-create-form");
+const params = new URLSearchParams(window.location.search);
+const postId = params.get("post_id");
+
+const createCommentApi = async (content) => {
+  return await request(`/posts/${postId}/comments`, {
+    method: "POST",
+    body: JSON.stringify({
+      content,
+    }),
+  });
+};
 
 if (commentCreateForm) {
   const commentTextarea = document.querySelector(".comment-create-textarea");
@@ -596,7 +607,7 @@ if (commentCreateForm) {
 
   commentTextarea.addEventListener("input", updateCommentButtonState);
 
-  commentCreateForm.addEventListener("submit", (event) => {
+  commentCreateForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const commentText = commentTextarea.value.trim();
@@ -606,24 +617,23 @@ if (commentCreateForm) {
       return;
     }
 
-    if (editingCommentItem) {
-      const commentContent =
-        editingCommentItem.querySelector(".comment-content");
-
-      commentContent.textContent = commentText;
-
-      editingCommentItem = null;
-      commentSubmitButton.textContent = "댓글 등록";
-    } else {
-      const newComment = createCommentElement(commentText);
-      commentList.appendChild(newComment);
-
-      commentCount += 1;
-      updateStats();
+    if (!postId) {
+      alert("게시글 정보를 찾을 수 없습니다.");
+      return;
     }
 
-    commentTextarea.value = "";
-    updateCommentButtonState();
+    try {
+      await createCommentApi(commentText);
+
+      alert("댓글이 작성되었습니다.");
+
+      commentTextarea.value = "";
+      updateCommentButtonState();
+
+      window.location.reload();
+    } catch (error) {
+      alert(error.message);
+    }
   });
 
   commentList.addEventListener("click", (event) => {
