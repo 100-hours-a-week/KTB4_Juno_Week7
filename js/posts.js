@@ -124,7 +124,11 @@ if (postDetailTitle) {
       return;
     }
 
-    element.style.backgroundImage = `url(${imageUrl})`;
+    const fullImageUrl = imageUrl.startsWith("http")
+      ? imageUrl
+      : `${API_BASE_URL}${imageUrl}`;
+
+    element.style.backgroundImage = `url(${fullImageUrl})`;
     element.style.backgroundSize = "cover";
     element.style.backgroundPosition = "center";
     element.style.backgroundRepeat = "no-repeat";
@@ -278,11 +282,37 @@ if (postCreateForm) {
     postSubmitButton.style.backgroundColor = "#aca0eb";
   };
 
+  const uploadImageApi = async (file) => {
+    const formData = new FormData();
+
+    formData.append("image", file);
+
+    const response = await fetch(`${API_BASE_URL}/images`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(data?.message || "이미지 업로드 중 오류가 발생했습니다.");
+    }
+
+    return data;
+  };
+
   const createPostApi = async () => {
+    let imageUrl = "";
+
+    if (selectedPostImage) {
+      const imageResponse = await uploadImageApi(selectedPostImage);
+      imageUrl = imageResponse.data.image_url;
+    }
+
     const body = {
       title: postTitleInput.value.trim(),
       content: postContentTextarea.value.trim(),
-      image: "",
+      image: imageUrl,
     };
 
     return await request("/posts", {
@@ -362,6 +392,7 @@ if (postEditForm) {
 
   let selectedEditImage = null;
   let selectedEditImageDataUrl = "";
+  let currentPostImageUrl = "";
 
   const setEditHelperText = (message) => {
     postEditHelperText.textContent = message;
@@ -407,11 +438,37 @@ if (postEditForm) {
     return await request(`/posts/${postId}`);
   };
 
+  const uploadImageApi = async (file) => {
+    const formData = new FormData();
+
+    formData.append("image", file);
+
+    const response = await fetch(`${API_BASE_URL}/images`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(data?.message || "이미지 업로드 중 오류가 발생했습니다.");
+    }
+
+    return data;
+  };
+
   const updatePostApi = async () => {
+    let imageUrl = currentPostImageUrl;
+
+    if (selectedEditImage) {
+      const imageResponse = await uploadImageApi(selectedEditImage);
+      imageUrl = imageResponse.data.image_url;
+    }
+
     const body = {
       title: editPostTitleInput.value.trim(),
       content: editPostContentTextarea.value.trim(),
-      image: "",
+      image: imageUrl,
     };
 
     return await request(`/posts/${postId}`, {
@@ -423,6 +480,7 @@ if (postEditForm) {
   const renderEditPost = (post) => {
     editPostTitleInput.value = post.title;
     editPostContentTextarea.value = post.content;
+    currentPostImageUrl = post.image || "";
 
     if (post.image) {
       editPostFileName.textContent = "기존 이미지";
@@ -466,7 +524,13 @@ if (postEditForm) {
     if (!file) {
       selectedEditImage = null;
       selectedEditImageDataUrl = "";
-      editPostFileName.textContent = "기존 파일명";
+
+      if (currentPostImageUrl) {
+        editPostFileName.textContent = "기존 이미지";
+      } else {
+        editPostFileName.textContent = "파일을 선택해주세요.";
+      }
+
       return;
     }
 
