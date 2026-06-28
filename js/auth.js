@@ -135,7 +135,7 @@ if (signupForm) {
     helperElement.style.whiteSpace = "nowrap";
   };
 
-  hideHelperText(profileHelperText);
+  showHelperText(profileHelperText, "*프로필 사진을 추가해주세요.");
   hideHelperText(signupEmailHelper);
   hideHelperText(signupPasswordHelper);
   hideHelperText(signupPasswordConfirmHelper);
@@ -144,7 +144,7 @@ if (signupForm) {
   const validateProfileImage = () => {
     if (!selectedProfileImage) {
       showHelperText(profileHelperText, "*프로필 사진을 추가해주세요.");
-      return false;
+      return true;
     }
 
     hideHelperText(profileHelperText);
@@ -249,7 +249,6 @@ if (signupForm) {
     const nickname = signupNicknameInput.value.trim();
 
     return (
-      selectedProfileImage &&
       signupEmailRegex.test(email) &&
       !isDuplicatedEmail(email) &&
       passwordRegex.test(password) &&
@@ -301,7 +300,7 @@ if (signupForm) {
   profileImageButton.addEventListener("click", () => {
     if (selectedProfileImage) {
       resetProfileImage();
-      hideHelperText(profileHelperText);
+      validateProfileImage();
       updateSignupButtonState();
       return;
     }
@@ -364,22 +363,16 @@ if (signupForm) {
     updateSignupButtonState();
   });
 
-  signupEmailInput.addEventListener("input", updateSignupButtonState);
-  signupPasswordInput.addEventListener("input", updateSignupButtonState);
-  signupPasswordConfirmInput.addEventListener("input", updateSignupButtonState);
-  signupNicknameInput.addEventListener("input", updateSignupButtonState);
-
   signupForm.addEventListener("submit", (event) => {
     event.preventDefault();
+    validateProfileImage();
 
-    const isProfileValid = validateProfileImage();
     const isEmailValid = validateSignupEmail();
     const isPasswordValid = validateSignupPassword();
     const isPasswordConfirmValid = validateSignupPasswordConfirm();
     const isNicknameValid = validateSignupNickname();
 
     if (
-      !isProfileValid ||
       !isEmailValid ||
       !isPasswordValid ||
       !isPasswordConfirmValid ||
