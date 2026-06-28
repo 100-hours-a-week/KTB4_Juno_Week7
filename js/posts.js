@@ -20,7 +20,11 @@ if (postList) {
       return "";
     }
 
-    return `style="background-image: url('${imageUrl}'); background-size: cover; background-position: center;"`;
+    const fullImageUrl = imageUrl.startsWith("http")
+      ? imageUrl
+      : `${API_BASE_URL}${imageUrl}`;
+
+    return `style="background-image: url('${fullImageUrl}'); background-size: cover; background-position: center; background-repeat: no-repeat;"`;
   };
 
   const renderPosts = (posts) => {
@@ -79,6 +83,7 @@ if (postList) {
 
   loadPosts();
 }
+
 let currentPostLiked = false;
 
 /* 게시글 상세 페이지 API 연동 */
