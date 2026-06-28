@@ -404,3 +404,38 @@ if (commentCreateForm) {
 
   updateCommentButtonState();
 }
+/* 게시글 삭제 모달 이벤트 */
+
+const postDeleteButton = document.querySelector(".post-delete-button");
+const postDeleteModal = document.querySelector("#postDeleteModal");
+
+if (postDeleteButton && postDeleteModal) {
+  const postDeleteCancelButton = postDeleteModal.querySelector(
+    ".delete-modal-cancel-button",
+  );
+  const postDeleteConfirmButton = postDeleteModal.querySelector(
+    ".delete-modal-confirm-button",
+  );
+
+  const openPostDeleteModal = () => {
+    postDeleteModal.classList.add("show");
+    document.body.style.overflow = "hidden";
+  };
+
+  const closePostDeleteModal = () => {
+    postDeleteModal.classList.remove("show");
+    document.body.style.overflow = "";
+  };
+
+  postDeleteButton.addEventListener("click", openPostDeleteModal);
+
+  postDeleteCancelButton.addEventListener("click", closePostDeleteModal);
+
+  postDeleteConfirmButton.addEventListener("click", () => {
+    localStorage.removeItem("editedPost");
+
+    closePostDeleteModal();
+
+    window.location.href = "./posts.html";
+  });
+}
