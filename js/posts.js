@@ -134,6 +134,27 @@ if (postDetailTitle) {
     element.style.backgroundRepeat = "no-repeat";
   };
 
+  const setPostDetailImage = (element, imageUrl) => {
+    element.innerHTML = "";
+    element.style.backgroundImage = "";
+
+    if (!imageUrl) {
+      return;
+    }
+
+    const fullImageUrl = imageUrl.startsWith("http")
+      ? imageUrl
+      : `${API_BASE_URL}${imageUrl}`;
+
+    const imageElement = document.createElement("img");
+
+    imageElement.src = fullImageUrl;
+    imageElement.alt = "게시글 이미지";
+    imageElement.className = "post-detail-image-element";
+
+    element.appendChild(imageElement);
+  };
+
   const renderComments = (comments) => {
     commentList.innerHTML = "";
 
@@ -197,9 +218,8 @@ if (postDetailTitle) {
     postEditLink.href = `./post-edit.html?post_id=${post.post_id}`;
 
     setBackgroundImage(postDetailAuthorImage, post.author_profile_image);
-
     if (post.image) {
-      setBackgroundImage(postDetailImage, post.image);
+      setPostDetailImage(postDetailImage, post.image);
       postDetailImage.style.display = "block";
     } else {
       postDetailImage.style.display = "none";
