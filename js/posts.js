@@ -80,6 +80,139 @@ if (postList) {
   loadPosts();
 }
 
+/* 게시글 상세 페이지 API 연동 */
+
+const postDetailTitle = document.querySelector("#postDetailTitle");
+
+if (postDetailTitle) {
+  const postDetailAuthorImage = document.querySelector(
+    "#postDetailAuthorImage",
+  );
+  const postDetailAuthorName = document.querySelector("#postDetailAuthorName");
+  const postDetailDate = document.querySelector("#postDetailDate");
+  const postDetailImage = document.querySelector("#postDetailImage");
+  const postDetailContent = document.querySelector("#postDetailContent");
+  const postDetailLikeCount = document.querySelector("#postDetailLikeCount");
+  const postDetailViewCount = document.querySelector("#postDetailViewCount");
+  const postDetailCommentCount = document.querySelector(
+    "#postDetailCommentCount",
+  );
+  const postEditLink = document.querySelector("#postEditLink");
+  const commentList = document.querySelector("#commentList");
+
+  const params = new URLSearchParams(window.location.search);
+  const postId = params.get("post_id");
+
+  const getPostDetailApi = async () => {
+    return await request(`/posts/${postId}`);
+  };
+
+  const formatDetailCount = (count) => {
+    if (count >= 1000) {
+      return `${Math.floor(count / 1000)}k`;
+    }
+
+    return String(count);
+  };
+
+  const setBackgroundImage = (element, imageUrl) => {
+    if (!imageUrl) {
+      element.style.backgroundImage = "";
+      return;
+    }
+
+    element.style.backgroundImage = `url(${imageUrl})`;
+    element.style.backgroundSize = "cover";
+    element.style.backgroundPosition = "center";
+    element.style.backgroundRepeat = "no-repeat";
+  };
+
+  const renderComments = (comments) => {
+    commentList.innerHTML = "";
+
+    comments.forEach((comment) => {
+      const commentItem = document.createElement("article");
+      commentItem.className = "comment-item";
+      commentItem.dataset.commentId = comment.comment_id;
+
+      commentItem.innerHTML = `
+        <div class="comment-main">
+          <div class="comment-profile-image"></div>
+
+          <div class="comment-content-box">
+            <div class="comment-meta-row">
+              <span class="comment-author-name">${comment.author_nickname}</span>
+              <time class="comment-date">${comment.created_at}</time>
+            </div>
+
+            <p class="comment-content">${comment.content}</p>
+          </div>
+        </div>
+
+        <div class="comment-actions">
+          <button type="button" class="post-detail-action-button comment-edit-button">
+            <span class="post-detail-action-text">수정</span>
+          </button>
+          <button type="button" class="post-detail-action-button comment-delete-button">
+            <span class="post-detail-action-text">삭제</span>
+          </button>
+        </div>
+      `;
+
+      const commentProfileImage = commentItem.querySelector(
+        ".comment-profile-image",
+      );
+
+      setBackgroundImage(commentProfileImage, comment.author_profile_image);
+
+      commentList.appendChild(commentItem);
+    });
+  };
+
+  const renderPostDetail = (post) => {
+    postDetailTitle.textContent = post.title;
+    postDetailAuthorName.textContent = post.author_nickname;
+    postDetailDate.textContent = post.created_at;
+    postDetailContent.textContent = post.content;
+
+    postDetailLikeCount.textContent = formatDetailCount(post.like_count);
+    postDetailViewCount.textContent = formatDetailCount(post.view_count);
+    postDetailCommentCount.textContent = formatDetailCount(post.comment_count);
+
+    postEditLink.href = `./post-edit.html?post_id=${post.post_id}`;
+
+    setBackgroundImage(postDetailAuthorImage, post.author_profile_image);
+
+    if (post.image) {
+      setBackgroundImage(postDetailImage, post.image);
+      postDetailImage.style.display = "block";
+    } else {
+      postDetailImage.style.display = "none";
+    }
+
+    renderComments(post.comments);
+  };
+
+  const loadPostDetail = async () => {
+    if (!postId) {
+      alert("게시글 정보를 찾을 수 없습니다.");
+      window.location.href = "./posts.html";
+      return;
+    }
+
+    try {
+      const response = await getPostDetailApi();
+
+      renderPostDetail(response.data);
+    } catch (error) {
+      alert(error.message);
+      window.location.href = "./posts.html";
+    }
+  };
+
+  loadPostDetail();
+}
+
 /* 게시글 작성 페이지 이벤트 */
 
 const postCreateForm = document.querySelector(
@@ -355,9 +488,21 @@ if (commentCreateForm) {
   let editingCommentItem = null;
   let deletingCommentItem = null;
   let isLiked = false;
-  let likeCount = 123;
-  let viewCount = 123;
-  let commentCount = 123;
+
+  const params = new URLSearchParams(window.location.search);
+  const postId = params.get("post_id");
+
+  const addLikeApi = async () => {
+    return await request(`/posts/${postId}/likes`, {
+      method: "POST",
+    });
+  };
+
+  const deleteLikeApi = async () => {
+    return await request(`/posts/${postId}/likes`, {
+      method: "DELETE",
+    });
+  };
 
   const getNowDateText = () => {
     const now = new Date();
@@ -380,10 +525,16 @@ if (commentCreateForm) {
     return String(count);
   };
 
-  const updateStats = () => {
+  const updateLikeState = (likeCount, liked) => {
     likeCountElement.textContent = formatCount(likeCount);
-    viewCountElement.textContent = formatCount(viewCount);
-    commentCountElement.textContent = formatCount(commentCount);
+    isLiked = liked;
+
+    if (isLiked) {
+      likeStatCard.style.backgroundColor = "#aca0eb";
+      return;
+    }
+
+    likeStatCard.style.backgroundColor = "#d9d9d9";
   };
 
   const updateCommentButtonState = () => {
@@ -428,18 +579,19 @@ if (commentCreateForm) {
     return commentItem;
   };
 
-  likeStatCard.addEventListener("click", () => {
-    if (isLiked) {
-      isLiked = false;
-      likeCount -= 1;
-      likeStatCard.style.backgroundColor = "#d9d9d9";
-    } else {
-      isLiked = true;
-      likeCount += 1;
-      likeStatCard.style.backgroundColor = "#aca0eb";
+  likeStatCard.addEventListener("click", async () => {
+    if (!postId) {
+      alert("게시글 정보를 찾을 수 없습니다.");
+      return;
     }
 
-    updateStats();
+    try {
+      const response = isLiked ? await deleteLikeApi() : await addLikeApi();
+
+      updateLikeState(response.data.like_count, response.data.liked);
+    } catch (error) {
+      alert(error.message);
+    }
   });
 
   commentTextarea.addEventListener("input", updateCommentButtonState);
@@ -526,7 +678,6 @@ if (commentCreateForm) {
   });
 
   updateCommentButtonState();
-  updateStats();
 }
 /* 게시글 삭제 모달 이벤트 */
 

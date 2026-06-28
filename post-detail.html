@@ -43,17 +43,28 @@
     <main class="post-detail-page">
       <section class="post-detail-section">
         <div class="post-detail-header">
-          <h2 class="post-detail-title">제목 1</h2>
+          <h2 class="post-detail-title" id="postDetailTitle">제목 1</h2>
 
           <div class="post-detail-meta-row">
             <div class="post-detail-author">
-              <div class="post-detail-author-image"></div>
-              <span class="post-detail-author-name">더미 작성자 1</span>
-              <time class="post-detail-date">2021-01-01 00:00:00</time>
+              <div
+                class="post-detail-author-image"
+                id="postDetailAuthorImage"
+              ></div>
+              <span class="post-detail-author-name" id="postDetailAuthorName">
+                더미 작성자 1
+              </span>
+              <time class="post-detail-date" id="postDetailDate"
+                >2021-01-01 00:00:00</time
+              >
             </div>
 
             <div class="post-detail-actions">
-              <a href="./post-edit.html" class="post-detail-action-button">
+              <a
+                href="./post-edit.html"
+                class="post-detail-action-button"
+                id="postEditLink"
+              >
                 <span class="post-detail-action-text">수정</span>
               </a>
               <button
@@ -67,9 +78,9 @@
         </div>
 
         <div class="post-detail-divider"></div>
-        <div class="post-detail-image"></div>
+        <div class="post-detail-image" id="postDetailImage"></div>
 
-        <p class="post-detail-content">
+        <p class="post-detail-content" id="postDetailContent">
           무엇을 얘기할까요? 아무말이라면, 삶은 항상 놀라운 모험이라고
           생각합니다. 우리는 매일 새로운 경험을 하고 배우며 성장합니다. 때로는
           어려움과 도전이 있지만, 그것들이 우리를 더 강하고 지혜롭게 만듭니다.
@@ -90,17 +101,32 @@
         </p>
         <div class="post-detail-stats">
           <button type="button" class="post-detail-stat-card like-stat-card">
-            <strong class="post-detail-stat-number like-count">123</strong>
+            <strong
+              class="post-detail-stat-number like-count"
+              id="postDetailLikeCount"
+            >
+              123
+            </strong>
             <span class="post-detail-stat-label">좋아요수</span>
           </button>
 
           <div class="post-detail-stat-card">
-            <strong class="post-detail-stat-number view-count">123</strong>
+            <strong
+              class="post-detail-stat-number view-count"
+              id="postDetailViewCount"
+            >
+              123
+            </strong>
             <span class="post-detail-stat-label">조회수</span>
           </div>
 
           <div class="post-detail-stat-card">
-            <strong class="post-detail-stat-number comment-count">123</strong>
+            <strong
+              class="post-detail-stat-number comment-count"
+              id="postDetailCommentCount"
+            >
+              123
+            </strong>
             <span class="post-detail-stat-label">댓글</span>
           </div>
         </div>
@@ -120,7 +146,7 @@
             </button>
           </div>
         </form>
-        <div class="comment-list">
+        <div class="comment-list" id="commentList">
           <article class="comment-item">
             <div class="comment-main">
               <div class="comment-profile-image"></div>
@@ -186,5 +212,6 @@
     <script src="./js/config.js"></script>
     <script src="./js/api.js"></script>
     <script src="./js/common.js"></script>
+    <script src="./js/posts.js"></script>
   </body>
 </html>
