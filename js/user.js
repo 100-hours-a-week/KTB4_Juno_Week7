@@ -7,6 +7,7 @@ if (profileEditForm) {
   const profileImageEditButton = document.querySelector(
     ".profile-image-edit-button",
   );
+  const profileEmail = document.querySelector("#profileEmail");
   const nicknameInput = document.querySelector("#nickname");
   const profileHelperText = document.querySelector("#profileHelperText");
   const profileSubmitButton = document.querySelector(".profile-submit-button");
@@ -21,20 +22,22 @@ if (profileEditForm) {
     ".withdraw-modal-confirm-button",
   );
 
-  const originalNickname = nicknameInput.value.trim();
+  let originalNickname = "";
 
-  const getSavedUsers = () => {
-    const savedUsers = localStorage.getItem("users");
+  const getMyProfileApi = async () => {
+    return await request("/users/me");
+  };
 
-    if (!savedUsers) {
-      return [];
-    }
+  const updateMyProfileApi = async () => {
+    const body = {
+      nickname: nicknameInput.value.trim(),
+      profile_image: "",
+    };
 
-    try {
-      return JSON.parse(savedUsers);
-    } catch (error) {
-      return [];
-    }
+    return await request("/users/me", {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    });
   };
 
   const showHelperText = (message) => {
@@ -47,14 +50,6 @@ if (profileEditForm) {
     profileHelperText.style.visibility = "hidden";
   };
 
-  const isDuplicatedNickname = (nickname) => {
-    const users = getSavedUsers();
-
-    return users.some((user) => {
-      return user.nickname === nickname && nickname !== originalNickname;
-    });
-  };
-
   const validateNickname = () => {
     const nickname = nicknameInput.value.trim();
 
@@ -65,11 +60,6 @@ if (profileEditForm) {
 
     if (nickname.length >= 11) {
       showHelperText("*닉네임은 최대 10자 까지 작성 가능합니다.");
-      return false;
-    }
-
-    if (isDuplicatedNickname(nickname)) {
-      showHelperText("*중복된 닉네임 입니다.");
       return false;
     }
 
@@ -96,13 +86,36 @@ if (profileEditForm) {
     }, 2000);
   };
 
-  const saveProfile = () => {
-    const profile = {
-      nickname: nicknameInput.value.trim(),
-      updatedAt: new Date().toISOString(),
-    };
+  const renderMyProfile = (user) => {
+    profileEmail.textContent = user.email;
+    nicknameInput.value = user.nickname;
+    originalNickname = user.nickname;
 
-    localStorage.setItem("profile", JSON.stringify(profile));
+    if (user.profile_image) {
+      profileImageEditButton.style.backgroundImage = `url(${user.profile_image})`;
+      profileImageEditButton.classList.add("has-image");
+    }
+
+    updateProfileSubmitButtonState();
+  };
+
+  const loadMyProfile = async () => {
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+      alert("로그인이 필요합니다.");
+      window.location.href = "./index.html";
+      return;
+    }
+
+    try {
+      const response = await getMyProfileApi();
+
+      renderMyProfile(response.data);
+    } catch (error) {
+      alert(error.message);
+      window.location.href = "./posts.html";
+    }
   };
 
   profileImageInput.addEventListener("change", () => {
@@ -127,7 +140,7 @@ if (profileEditForm) {
     updateProfileSubmitButtonState();
   });
 
-  profileEditForm.addEventListener("submit", (event) => {
+  profileEditForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const isValid = validateNickname();
@@ -137,9 +150,16 @@ if (profileEditForm) {
       return;
     }
 
-    saveProfile();
-    profileSubmitButton.style.backgroundColor = "#7f6aee";
-    showProfileToast();
+    try {
+      await updateMyProfileApi();
+
+      originalNickname = nicknameInput.value.trim();
+      profileSubmitButton.style.backgroundColor = "#7f6aee";
+      showProfileToast();
+    } catch (error) {
+      showHelperText(`*${error.message}`);
+      profileSubmitButton.style.backgroundColor = "#aca0eb";
+    }
   });
 
   withdrawButton.addEventListener("click", () => {
@@ -164,7 +184,9 @@ if (profileEditForm) {
 
   hideHelperText();
   updateProfileSubmitButtonState();
+  loadMyProfile();
 }
+
 /* 비밀번호 수정 페이지 이벤트 */
 
 const passwordEditForm = document.querySelector(".password-edit-form");
