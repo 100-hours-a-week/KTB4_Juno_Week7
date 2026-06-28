@@ -487,6 +487,12 @@ const updateCommentApi = async (commentId, content) => {
   });
 };
 
+const deleteCommentApi = async (commentId) => {
+  return await request(`/posts/${postId}/comments/${commentId}`, {
+    method: "DELETE",
+  });
+};
+
 if (commentCreateForm) {
   const commentTextarea = document.querySelector(".comment-create-textarea");
   const commentSubmitButton = document.querySelector(".comment-create-button");
@@ -684,26 +690,26 @@ if (commentCreateForm) {
     commentDeleteModal.classList.remove("show");
     document.body.style.overflow = "";
   });
-
-  commentDeleteConfirmButton.addEventListener("click", () => {
+  commentDeleteConfirmButton.addEventListener("click", async () => {
     if (!deletingCommentItem) {
       return;
     }
 
-    if (editingCommentItem === deletingCommentItem) {
-      editingCommentItem = null;
-      commentTextarea.value = "";
-      commentSubmitButton.textContent = "댓글 등록";
-      updateCommentButtonState();
+    const commentId = deletingCommentItem.dataset.commentId;
+
+    try {
+      await deleteCommentApi(commentId);
+
+      alert("댓글이 삭제되었습니다.");
+
+      deletingCommentItem = null;
+      commentDeleteModal.classList.remove("show");
+      document.body.style.overflow = "";
+
+      window.location.reload();
+    } catch (error) {
+      alert(error.message);
     }
-
-    deletingCommentItem.remove();
-    commentCount -= 1;
-    updateStats();
-
-    deletingCommentItem = null;
-    commentDeleteModal.classList.remove("show");
-    document.body.style.overflow = "";
   });
 
   updateCommentButtonState();
