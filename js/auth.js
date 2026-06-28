@@ -38,6 +38,18 @@ if (loginForm) {
     return "";
   };
 
+  const signinApi = async () => {
+    const body = {
+      email: emailInput.value.trim(),
+      password: passwordInput.value.trim(),
+    };
+
+    return await request("/users/signin", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+  };
+
   const updateLoginState = () => {
     const errorMessage = getLoginErrorMessage();
 
@@ -55,7 +67,7 @@ if (loginForm) {
   emailInput.addEventListener("input", updateLoginState);
   passwordInput.addEventListener("input", updateLoginState);
 
-  loginForm.addEventListener("submit", (event) => {
+  loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const isValid = updateLoginState();
@@ -64,7 +76,16 @@ if (loginForm) {
       return;
     }
 
-    window.location.href = "./posts.html";
+    try {
+      const response = await signinApi();
+
+      localStorage.setItem("userId", response.data.user_id);
+
+      window.location.href = "./posts.html";
+    } catch (error) {
+      loginHelperText.textContent = `* ${error.message}`;
+      loginButton.classList.remove("active");
+    }
   });
 }
 
