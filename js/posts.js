@@ -478,6 +478,15 @@ const createCommentApi = async (content) => {
   });
 };
 
+const updateCommentApi = async (commentId, content) => {
+  return await request(`/posts/${postId}/comments/${commentId}`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      content,
+    }),
+  });
+};
+
 if (commentCreateForm) {
   const commentTextarea = document.querySelector(".comment-create-textarea");
   const commentSubmitButton = document.querySelector(".comment-create-button");
@@ -623,11 +632,21 @@ if (commentCreateForm) {
     }
 
     try {
-      await createCommentApi(commentText);
+      if (editingCommentItem) {
+        const commentId = editingCommentItem.dataset.commentId;
 
-      alert("댓글이 작성되었습니다.");
+        await updateCommentApi(commentId, commentText);
+
+        alert("댓글이 수정되었습니다.");
+      } else {
+        await createCommentApi(commentText);
+
+        alert("댓글이 작성되었습니다.");
+      }
 
       commentTextarea.value = "";
+      editingCommentItem = null;
+      commentSubmitButton.textContent = "댓글 등록";
       updateCommentButtonState();
 
       window.location.reload();
