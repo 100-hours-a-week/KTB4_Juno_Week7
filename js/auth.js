@@ -120,28 +120,6 @@ if (signupForm) {
 
   const signupEmailRegex = /^[A-Za-z0-9.]+@[A-Za-z0-9.]+\.[A-Za-z]+$/;
 
-  const getSavedUsers = () => {
-    const savedUsers = localStorage.getItem("users");
-
-    if (!savedUsers) {
-      return [];
-    }
-
-    return JSON.parse(savedUsers);
-  };
-
-  const isDuplicatedEmail = (email) => {
-    const users = getSavedUsers();
-
-    return users.some((user) => user.email === email);
-  };
-
-  const isDuplicatedNickname = (nickname) => {
-    const users = getSavedUsers();
-
-    return users.some((user) => user.nickname === nickname);
-  };
-
   const hasSpace = (value) => /\s/.test(value);
 
   const hideHelperText = (helperElement) => {
@@ -297,7 +275,7 @@ if (signupForm) {
       email: signupEmailInput.value.trim(),
       password: signupPasswordInput.value.trim(),
       nickname: signupNicknameInput.value.trim(),
-      profile_image: selectedProfileImageDataUrl || "",
+      profile_image: "",
     };
 
     return await request("/users/signup", {

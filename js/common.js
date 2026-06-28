@@ -33,7 +33,6 @@ if (logoutButton) {
       console.error(error.message);
     } finally {
       localStorage.removeItem("userId");
-      localStorage.removeItem("loginUser");
       window.location.href = "./index.html";
     }
   });

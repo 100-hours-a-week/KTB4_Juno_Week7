@@ -193,8 +193,6 @@ if (profileEditForm) {
       alert("회원 탈퇴가 완료되었습니다.");
 
       localStorage.removeItem("userId");
-      localStorage.removeItem("loginUser");
-      localStorage.removeItem("profile");
 
       withdrawModal.classList.remove("show");
       document.body.style.overflow = "";

@@ -230,16 +230,6 @@ if (postCreateForm) {
   let selectedPostImage = null;
   let selectedPostImageDataUrl = "";
 
-  const getSavedPosts = () => {
-    const savedPosts = localStorage.getItem("posts");
-
-    if (!savedPosts) {
-      return [];
-    }
-
-    return JSON.parse(savedPosts);
-  };
-
   const setHelperText = (message) => {
     postCreateHelperText.textContent = message;
   };
@@ -579,19 +569,6 @@ if (commentCreateForm) {
     });
   };
 
-  const getNowDateText = () => {
-    const now = new Date();
-
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const date = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const seconds = String(now.getSeconds()).padStart(2, "0");
-
-    return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
-  };
-
   const formatCount = (count) => {
     if (count >= 1000) {
       return `${Math.floor(count / 1000)}k`;
@@ -621,37 +598,6 @@ if (commentCreateForm) {
     }
 
     commentSubmitButton.style.backgroundColor = "#aca0eb";
-  };
-
-  const createCommentElement = (content) => {
-    const commentItem = document.createElement("article");
-    commentItem.className = "comment-item";
-
-    commentItem.innerHTML = `
-      <div class="comment-main">
-        <div class="comment-profile-image"></div>
-
-        <div class="comment-content-box">
-          <div class="comment-meta-row">
-            <span class="comment-author-name">더미 작성자 1</span>
-            <time class="comment-date">${getNowDateText()}</time>
-          </div>
-
-          <p class="comment-content">${content}</p>
-        </div>
-      </div>
-
-      <div class="comment-actions">
-        <button type="button" class="post-detail-action-button comment-edit-button">
-          <span class="post-detail-action-text">수정</span>
-        </button>
-        <button type="button" class="post-detail-action-button comment-delete-button">
-          <span class="post-detail-action-text">삭제</span>
-        </button>
-      </div>
-    `;
-
-    return commentItem;
   };
 
   likeStatCard.addEventListener("click", async () => {

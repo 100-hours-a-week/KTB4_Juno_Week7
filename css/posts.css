@@ -92,9 +92,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
 }
 
 .post-stats {
+  min-width: 0;
+
   display: flex;
   align-items: center;
   gap: 10px;
@@ -111,8 +114,9 @@
 }
 
 .post-date {
-  width: 133px;
-  height: 18px;
+  width: auto;
+  min-width: 160px;
+  height: auto;
 
   font-size: 14px;
   font-weight: 400;
@@ -120,6 +124,9 @@
   letter-spacing: 0;
   text-align: right;
   color: #000000;
+
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .post-card-bottom {
@@ -467,11 +474,13 @@
 
   display: flex;
   align-items: flex-start;
+  gap: 24px;
   padding-top: 8px;
 }
 
 .comment-author-name {
-  width: 79px;
+  width: auto;
+  max-width: 120px;
   height: 20px;
 
   font-size: 15px;
@@ -479,12 +488,16 @@
   line-height: 130%;
   letter-spacing: 0;
   color: #000000;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
 }
 
 .comment-date {
-  width: 160px;
+  width: auto;
   height: 18px;
-  margin-left: 24px;
   padding-top: 2px;
 
   font-size: 14px;
@@ -495,6 +508,7 @@
   color: #000000;
 
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .comment-content {
