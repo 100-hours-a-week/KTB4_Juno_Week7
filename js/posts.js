@@ -720,6 +720,15 @@ const postDeleteButton = document.querySelector(".post-delete-button");
 const postDeleteModal = document.querySelector("#postDeleteModal");
 
 if (postDeleteButton && postDeleteModal) {
+  const params = new URLSearchParams(window.location.search);
+  const postId = params.get("post_id");
+
+  const deletePostApi = async () => {
+    return await request(`/posts/${postId}`, {
+      method: "DELETE",
+    });
+  };
+
   const postDeleteCancelButton = postDeleteModal.querySelector(
     ".delete-modal-cancel-button",
   );
@@ -741,11 +750,22 @@ if (postDeleteButton && postDeleteModal) {
 
   postDeleteCancelButton.addEventListener("click", closePostDeleteModal);
 
-  postDeleteConfirmButton.addEventListener("click", () => {
-    localStorage.removeItem("editedPost");
+  postDeleteConfirmButton.addEventListener("click", async () => {
+    if (!postId) {
+      alert("게시글 정보를 찾을 수 없습니다.");
+      return;
+    }
 
-    closePostDeleteModal();
+    try {
+      await deletePostApi();
 
-    window.location.href = "./posts.html";
+      alert("게시글이 삭제되었습니다.");
+
+      closePostDeleteModal();
+
+      window.location.href = "./posts.html";
+    } catch (error) {
+      alert(error.message);
+    }
   });
 }
