@@ -1,3 +1,31 @@
+/* 공통 이미지 렌더링 */
+
+const getFullImageUrl = (imageUrl) => {
+  if (!imageUrl) {
+    return "";
+  }
+
+  return imageUrl.startsWith("http") ? imageUrl : `${API_BASE_URL}${imageUrl}`;
+};
+
+const setBackgroundImage = (element, imageUrl) => {
+  if (!element) {
+    return;
+  }
+
+  if (!imageUrl) {
+    element.style.backgroundImage = "";
+    return;
+  }
+
+  const fullImageUrl = getFullImageUrl(imageUrl);
+
+  element.style.backgroundImage = `url(${fullImageUrl})`;
+  element.style.backgroundSize = "cover";
+  element.style.backgroundPosition = "center";
+  element.style.backgroundRepeat = "no-repeat";
+};
+
 /* 게시글 목록 페이지 API 연동 */
 
 const postList = document.querySelector("#postList");
@@ -13,18 +41,6 @@ if (postList) {
     }
 
     return String(count);
-  };
-
-  const getProfileImageStyle = (imageUrl) => {
-    if (!imageUrl) {
-      return "";
-    }
-
-    const fullImageUrl = imageUrl.startsWith("http")
-      ? imageUrl
-      : `${API_BASE_URL}${imageUrl}`;
-
-    return `style="background-image: url('${fullImageUrl}'); background-size: cover; background-position: center; background-repeat: no-repeat;"`;
   };
 
   const renderPosts = (posts) => {
@@ -58,14 +74,15 @@ if (postList) {
           </div>
 
           <div class="post-card-bottom">
-            <div 
-              class="post-author-image"
-              ${getProfileImageStyle(post.author_profile_image)}
-            ></div>
+            <div class="post-author-image"></div>
             <span class="post-author-name">${post.author_nickname}</span>
           </div>
         </article>
       `;
+
+      const postAuthorImage = postCardLink.querySelector(".post-author-image");
+
+      setBackgroundImage(postAuthorImage, post.author_profile_image);
 
       postList.appendChild(postCardLink);
     });
@@ -123,22 +140,6 @@ if (postDetailTitle) {
     return String(count);
   };
 
-  const setBackgroundImage = (element, imageUrl) => {
-    if (!imageUrl) {
-      element.style.backgroundImage = "";
-      return;
-    }
-
-    const fullImageUrl = imageUrl.startsWith("http")
-      ? imageUrl
-      : `${API_BASE_URL}${imageUrl}`;
-
-    element.style.backgroundImage = `url(${fullImageUrl})`;
-    element.style.backgroundSize = "cover";
-    element.style.backgroundPosition = "center";
-    element.style.backgroundRepeat = "no-repeat";
-  };
-
   const setPostDetailImage = (element, imageUrl) => {
     element.innerHTML = "";
     element.style.backgroundImage = "";
@@ -147,9 +148,7 @@ if (postDetailTitle) {
       return;
     }
 
-    const fullImageUrl = imageUrl.startsWith("http")
-      ? imageUrl
-      : `${API_BASE_URL}${imageUrl}`;
+    const fullImageUrl = getFullImageUrl(imageUrl);
 
     const imageElement = document.createElement("img");
 
@@ -159,7 +158,6 @@ if (postDetailTitle) {
 
     element.appendChild(imageElement);
   };
-
   const renderComments = (comments) => {
     commentList.innerHTML = "";
 
