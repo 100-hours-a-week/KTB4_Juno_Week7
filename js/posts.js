@@ -124,6 +124,7 @@ if (postDetailTitle) {
   const detailLikeStatCard = document.querySelector(".like-stat-card");
   const postEditLink = document.querySelector("#postEditLink");
   const commentList = document.querySelector("#commentList");
+  const postDetailActions = document.querySelector(".post-detail-actions");
 
   const params = new URLSearchParams(window.location.search);
   const postId = params.get("post_id");
@@ -200,6 +201,25 @@ if (postDetailTitle) {
     });
   };
 
+  const isPostOwner = (authorId) => {
+    const loginUserId = localStorage.getItem("userId");
+
+    return String(authorId) === loginUserId;
+  };
+
+  const updatePostActionVisibility = (authorId) => {
+    if (!postDetailActions) {
+      return;
+    }
+
+    if (isPostOwner(authorId)) {
+      postDetailActions.style.display = "flex";
+      return;
+    }
+
+    postDetailActions.style.display = "none";
+  };
+
   const renderPostDetail = (post) => {
     postDetailTitle.textContent = post.title;
     postDetailAuthorName.textContent = post.author_nickname;
@@ -223,12 +243,13 @@ if (postDetailTitle) {
     setBackgroundImage(postDetailAuthorImage, post.author_profile_image);
     if (post.image) {
       setPostDetailImage(postDetailImage, post.image);
-      postDetailImage.style.display = "block";
+      postDetailImage.style.display = "flex";
     } else {
       postDetailImage.style.display = "none";
     }
 
     renderComments(post.comments);
+    updatePostActionVisibility(post.author_id);
   };
 
   const loadPostDetail = async () => {
