@@ -128,6 +128,9 @@ if (postDetailTitle) {
 
   const params = new URLSearchParams(window.location.search);
   const postId = params.get("post_id");
+  let currentComments = [];
+  let editingCommentId = null;
+  let deletingCommentId = null;
 
   const getPostDetailApi = async () => {
     return await request(`/posts/${postId}`);
@@ -248,7 +251,9 @@ if (postDetailTitle) {
       postDetailImage.style.display = "none";
     }
 
-    renderComments(post.comments);
+    currentComments = post.comments || [];
+
+    renderComments(currentComments);
     updatePostActionVisibility(post.author_id);
   };
 
@@ -268,6 +273,201 @@ if (postDetailTitle) {
       window.location.href = "./posts.html";
     }
   };
+
+  /* 게시글 상세 페이지 댓글 이벤트 */
+
+  const commentCreateForm = document.querySelector(".comment-create-form");
+
+  if (commentCreateForm) {
+    const commentTextarea = document.querySelector(".comment-create-textarea");
+    const commentSubmitButton = document.querySelector(
+      ".comment-create-button",
+    );
+    const commentDeleteModal = document.querySelector("#commentDeleteModal");
+    const commentDeleteCancelButton = commentDeleteModal.querySelector(
+      ".delete-modal-cancel-button",
+    );
+    const commentDeleteConfirmButton = commentDeleteModal.querySelector(
+      ".delete-modal-confirm-button",
+    );
+
+    const createCommentApi = async (content) => {
+      return await request(`/posts/${postId}/comments`, {
+        method: "POST",
+        body: JSON.stringify({
+          content,
+        }),
+      });
+    };
+
+    const updateCommentApi = async (commentId, content) => {
+      return await request(`/posts/${postId}/comments/${commentId}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          content,
+        }),
+      });
+    };
+
+    const deleteCommentApi = async (commentId) => {
+      return await request(`/posts/${postId}/comments/${commentId}`, {
+        method: "DELETE",
+      });
+    };
+
+    const addLikeApi = async () => {
+      return await request(`/posts/${postId}/likes`, {
+        method: "POST",
+      });
+    };
+
+    const deleteLikeApi = async () => {
+      return await request(`/posts/${postId}/likes`, {
+        method: "DELETE",
+      });
+    };
+
+    const updateLikeState = (likeCount, liked) => {
+      postDetailLikeCount.textContent = formatDetailCount(likeCount);
+      currentPostLiked = liked;
+
+      if (currentPostLiked) {
+        detailLikeStatCard.style.backgroundColor = "#aca0eb";
+        return;
+      }
+
+      detailLikeStatCard.style.backgroundColor = "#d9d9d9";
+    };
+
+    const updateCommentButtonState = () => {
+      const commentText = commentTextarea.value.trim();
+
+      if (commentText) {
+        commentSubmitButton.style.backgroundColor = "#7f6aee";
+        return;
+      }
+
+      commentSubmitButton.style.backgroundColor = "#aca0eb";
+    };
+
+    const startEditComment = (commentId) => {
+      const comment = currentComments.find(
+        (currentComment) =>
+          String(currentComment.comment_id) === String(commentId),
+      );
+
+      if (!comment) {
+        return;
+      }
+
+      editingCommentId = comment.comment_id;
+      commentTextarea.value = comment.content;
+      commentSubmitButton.textContent = "댓글 수정";
+      updateCommentButtonState();
+      commentTextarea.focus();
+    };
+
+    detailLikeStatCard.addEventListener("click", async () => {
+      if (!postId) {
+        alert("게시글 정보를 찾을 수 없습니다.");
+        return;
+      }
+
+      try {
+        const response = currentPostLiked
+          ? await deleteLikeApi()
+          : await addLikeApi();
+
+        updateLikeState(response.data.like_count, response.data.liked);
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+
+    commentTextarea.addEventListener("input", updateCommentButtonState);
+
+    commentCreateForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const commentText = commentTextarea.value.trim();
+
+      if (!commentText) {
+        updateCommentButtonState();
+        return;
+      }
+
+      if (!postId) {
+        alert("게시글 정보를 찾을 수 없습니다.");
+        return;
+      }
+
+      try {
+        if (editingCommentId !== null) {
+          await updateCommentApi(editingCommentId, commentText);
+          alert("댓글이 수정되었습니다.");
+        } else {
+          await createCommentApi(commentText);
+          alert("댓글이 작성되었습니다.");
+        }
+
+        commentTextarea.value = "";
+        editingCommentId = null;
+        commentSubmitButton.textContent = "댓글 등록";
+        updateCommentButtonState();
+
+        await loadPostDetail();
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+
+    commentList.addEventListener("click", (event) => {
+      const editButton = event.target.closest(".comment-edit-button");
+      const deleteButton = event.target.closest(".comment-delete-button");
+
+      if (editButton) {
+        const commentItem = editButton.closest(".comment-item");
+
+        startEditComment(commentItem.dataset.commentId);
+        return;
+      }
+
+      if (deleteButton) {
+        const commentItem = deleteButton.closest(".comment-item");
+
+        deletingCommentId = commentItem.dataset.commentId;
+        commentDeleteModal.classList.add("show");
+        document.body.style.overflow = "hidden";
+      }
+    });
+
+    commentDeleteCancelButton.addEventListener("click", () => {
+      deletingCommentId = null;
+      commentDeleteModal.classList.remove("show");
+      document.body.style.overflow = "";
+    });
+
+    commentDeleteConfirmButton.addEventListener("click", async () => {
+      if (deletingCommentId === null) {
+        return;
+      }
+
+      try {
+        await deleteCommentApi(deletingCommentId);
+        alert("댓글이 삭제되었습니다.");
+
+        deletingCommentId = null;
+        commentDeleteModal.classList.remove("show");
+        document.body.style.overflow = "";
+
+        await loadPostDetail();
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+
+    updateCommentButtonState();
+  }
 
   loadPostDetail();
 }
@@ -621,214 +821,6 @@ if (postEditForm) {
   loadEditPost();
 }
 
-/* 게시글 상세 페이지 댓글 이벤트 */
-
-const commentCreateForm = document.querySelector(".comment-create-form");
-const params = new URLSearchParams(window.location.search);
-const postId = params.get("post_id");
-
-const createCommentApi = async (content) => {
-  return await request(`/posts/${postId}/comments`, {
-    method: "POST",
-    body: JSON.stringify({
-      content,
-    }),
-  });
-};
-
-const updateCommentApi = async (commentId, content) => {
-  return await request(`/posts/${postId}/comments/${commentId}`, {
-    method: "PATCH",
-    body: JSON.stringify({
-      content,
-    }),
-  });
-};
-
-const deleteCommentApi = async (commentId) => {
-  return await request(`/posts/${postId}/comments/${commentId}`, {
-    method: "DELETE",
-  });
-};
-
-if (commentCreateForm) {
-  const commentTextarea = document.querySelector(".comment-create-textarea");
-  const commentSubmitButton = document.querySelector(".comment-create-button");
-  const commentList = document.querySelector(".comment-list");
-
-  const likeStatCard = document.querySelector(".like-stat-card");
-  const likeCountElement = document.querySelector(".like-count");
-  const viewCountElement = document.querySelector(".view-count");
-  const commentCountElement = document.querySelector(".comment-count");
-
-  const commentDeleteModal = document.querySelector("#commentDeleteModal");
-  const commentDeleteCancelButton = document.querySelector(
-    ".delete-modal-cancel-button",
-  );
-  const commentDeleteConfirmButton = document.querySelector(
-    ".delete-modal-confirm-button",
-  );
-
-  let editingCommentItem = null;
-  let deletingCommentItem = null;
-
-  const params = new URLSearchParams(window.location.search);
-  const postId = params.get("post_id");
-
-  const addLikeApi = async () => {
-    return await request(`/posts/${postId}/likes`, {
-      method: "POST",
-    });
-  };
-
-  const deleteLikeApi = async () => {
-    return await request(`/posts/${postId}/likes`, {
-      method: "DELETE",
-    });
-  };
-
-  const formatCount = (count) => {
-    if (count >= 1000) {
-      return `${Math.floor(count / 1000)}k`;
-    }
-
-    return String(count);
-  };
-
-  const updateLikeState = (likeCount, liked) => {
-    likeCountElement.textContent = formatCount(likeCount);
-    currentPostLiked = liked;
-
-    if (currentPostLiked) {
-      likeStatCard.style.backgroundColor = "#aca0eb";
-      return;
-    }
-
-    likeStatCard.style.backgroundColor = "#d9d9d9";
-  };
-
-  const updateCommentButtonState = () => {
-    const commentText = commentTextarea.value.trim();
-
-    if (commentText) {
-      commentSubmitButton.style.backgroundColor = "#7f6aee";
-      return;
-    }
-
-    commentSubmitButton.style.backgroundColor = "#aca0eb";
-  };
-
-  likeStatCard.addEventListener("click", async () => {
-    if (!postId) {
-      alert("게시글 정보를 찾을 수 없습니다.");
-      return;
-    }
-
-    try {
-      const response = currentPostLiked
-        ? await deleteLikeApi()
-        : await addLikeApi();
-
-      updateLikeState(response.data.like_count, response.data.liked);
-    } catch (error) {
-      alert(error.message);
-    }
-  });
-
-  commentTextarea.addEventListener("input", updateCommentButtonState);
-
-  commentCreateForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const commentText = commentTextarea.value.trim();
-
-    if (!commentText) {
-      commentSubmitButton.style.backgroundColor = "#aca0eb";
-      return;
-    }
-
-    if (!postId) {
-      alert("게시글 정보를 찾을 수 없습니다.");
-      return;
-    }
-
-    try {
-      if (editingCommentItem) {
-        const commentId = editingCommentItem.dataset.commentId;
-
-        await updateCommentApi(commentId, commentText);
-
-        alert("댓글이 수정되었습니다.");
-      } else {
-        await createCommentApi(commentText);
-
-        alert("댓글이 작성되었습니다.");
-      }
-
-      commentTextarea.value = "";
-      editingCommentItem = null;
-      commentSubmitButton.textContent = "댓글 등록";
-      updateCommentButtonState();
-
-      window.location.reload();
-    } catch (error) {
-      alert(error.message);
-    }
-  });
-
-  commentList.addEventListener("click", (event) => {
-    const editButton = event.target.closest(".comment-edit-button");
-    const deleteButton = event.target.closest(".comment-delete-button");
-
-    if (editButton) {
-      const commentItem = editButton.closest(".comment-item");
-      const commentContent = commentItem.querySelector(".comment-content");
-
-      editingCommentItem = commentItem;
-      commentTextarea.value = commentContent.textContent;
-      commentSubmitButton.textContent = "댓글 수정";
-      commentSubmitButton.style.backgroundColor = "#7f6aee";
-
-      commentTextarea.focus();
-      return;
-    }
-
-    if (deleteButton) {
-      deletingCommentItem = deleteButton.closest(".comment-item");
-      commentDeleteModal.classList.add("show");
-      document.body.style.overflow = "hidden";
-    }
-  });
-
-  commentDeleteCancelButton.addEventListener("click", () => {
-    deletingCommentItem = null;
-    commentDeleteModal.classList.remove("show");
-    document.body.style.overflow = "";
-  });
-  commentDeleteConfirmButton.addEventListener("click", async () => {
-    if (!deletingCommentItem) {
-      return;
-    }
-
-    const commentId = deletingCommentItem.dataset.commentId;
-
-    try {
-      await deleteCommentApi(commentId);
-
-      alert("댓글이 삭제되었습니다.");
-
-      deletingCommentItem = null;
-      commentDeleteModal.classList.remove("show");
-      document.body.style.overflow = "";
-
-      window.location.reload();
-    } catch (error) {
-      alert(error.message);
-    }
-  });
-
-  updateCommentButtonState();
-}
 /* 게시글 삭제 모달 이벤트 */
 
 const postDeleteButton = document.querySelector(".post-delete-button");
