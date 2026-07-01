@@ -143,6 +143,13 @@
 
   border-radius: 50%;
   background-color: #d9d9d9;
+
+  display: block;
+  flex-shrink: 0;
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .post-author-name {
@@ -212,6 +219,12 @@
 
   border-radius: 50%;
   background-color: #d9d9d9;
+
+  display: block;
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .post-detail-author-name {
@@ -475,6 +488,12 @@
 
   border-radius: 50%;
   background-color: #d9d9d9;
+
+  display: block;
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .comment-content-box {
